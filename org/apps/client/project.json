@@ -1,15 +1,15 @@
 {
-  "name": "shootout-client",
+  "name": "client",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
   "prefix": "app",
-  "sourceRoot": "apps/shootout-client/src",
+  "sourceRoot": "apps/client/src",
   "tags": [],
   "targets": {
     "extract-i18n": {
       "executor": "@angular-devkit/build-angular:extract-i18n",
       "options": {
-        "buildTarget": "shootout-client:build"
+        "buildTarget": "client:build"
       }
     },
     "lint": {
@@ -19,7 +19,7 @@
       "continuous": true,
       "executor": "@nx/web:file-server",
       "options": {
-        "buildTarget": "shootout-client:build",
+        "buildTarget": "client:build",
         "spa": true
       }
     }

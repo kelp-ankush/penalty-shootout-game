@@ -6,7 +6,7 @@ export default createConfig(
       root: __dirname,
 
       outputPath: {
-        base: '../../dist/apps/shootout-client',
+        base: '../../dist/apps/client',
       },
       index: './src/index.html',
       browser: './src/main.ts',
