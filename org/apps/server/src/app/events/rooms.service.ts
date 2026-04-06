@@ -57,7 +57,7 @@ export class RoomService {
     return availabeRoom;
   }
 
-  leaveRoom(userId: string, roomId: string) {
+  leaveRoom(userId: string, roomId: string): void {
     const room = this.rooms.find((room) => room.id === roomId);
     if (!room) return;
 
@@ -68,7 +68,7 @@ export class RoomService {
     }
   }
 
-  removeUserFromRooms(userId: string) {
+  removeUserFromRooms(userId: string): string[] {
     const roomIds: string[] = [];
 
     this.rooms = this.rooms.filter((room) => {

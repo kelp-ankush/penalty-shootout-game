@@ -5,7 +5,7 @@ import { gsap } from 'gsap';
 @Injectable({ providedIn: 'root' })
 export class GameAnimationService {
 
-  animateBall(ball: HTMLElement, coords: IPoint[], time: number, onComplete?: () => void) {
+  animateBall(ball: HTMLElement, coords: IPoint[], time: number, onComplete?: () => void): void {
     setTimeout(() => {
       gsap.to(ball, {
         duration: time,
@@ -43,7 +43,7 @@ export class GameAnimationService {
     onStart: () => void,
     onUpdate: (frame: number) => void,
     onComplete: () => void,
-  ) {
+  ): void {
     const totalSize = 11040;
     const frames = 46;
     const tl = gsap.timeline();

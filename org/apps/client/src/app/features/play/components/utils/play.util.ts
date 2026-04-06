@@ -25,7 +25,7 @@ export function checkGoal(
     right: number;
     bottom: number;
   },
-) {
+): boolean {
   const intersectsNet =
     r.top >= n.top && r.left >= n.left && r.bottom <= n.bottom && r.right <= n.right;
 
@@ -35,14 +35,14 @@ export function checkGoal(
   return intersectsNet && !intersectsGoalkie;
 }
 
-export function getContainerCoords(point: IPoint, rect: DOMRect) {
+export function getContainerCoords(point: IPoint, rect: DOMRect): IPoint {
   return {
     x: point.x - rect.left,
     y: point.y - rect.top,
   };
 }
 
-export function getViewPortCoords(point: IPoint, rect: DOMRect) {
+export function getViewPortCoords(point: IPoint, rect: DOMRect): IPoint {
   return {
     x: point.x + rect.left,
     y: point.y + rect.top,
@@ -147,7 +147,7 @@ export const jumphitboxes = [
   })),
 ];
 
-export function calculateClampedTime(power: number) {
+export function calculateClampedTime(power: number): number {
   const minPower = 0;
   const maxPower = 192;
   const minTime = 1;

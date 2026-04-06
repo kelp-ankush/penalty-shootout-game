@@ -45,84 +45,54 @@ import { tutorialStepsForGoalkeeper, tutorialStepsForStriker } from './utils/pla
 export class Play implements OnInit, AfterViewInit {
   userId = input<string>('');
   roomId = input<string>('');
-
   turn = signal<string>('');
   scores = signal<Record<string, number>>({});
-
   shotTaken = signal(false);
   shouldGoalkieDive = false;
   goalkieDivedClient = false;
   goalkieAnimationDone = signal<string>('not-dived');
   ballAnimationDone = signal<boolean>(false);
-
   goalkieDiveDirection = signal<string>(ASSETS.GOALKEEPER.LEFT);
   playerImage = signal<string>(ASSETS.PLAYER.BLUE);
   netsImage = ASSETS.ENVIRONMENT.NETS
   audienceImage = ASSETS.ENVIRONMENT.AUDIENCE
   fieldImage = ASSETS.ENVIRONMENT.FIELD
-
   round = signal(1);
-
   maxRounds = 5;
-
   ballPos = signal<IPoint>({ x: 0, y: 0 });
   initialBallPos: IPoint = { x: 0, y: 0 };
-
   goalkiePos = signal<IPoint>({ x: 0, y: 0 });
   initialGoalkiePos: IPoint = { x: 0, y: 0 };
-
   initialArrowPos: IPoint = { x: 0, y: 0 };
-
   myScore = signal(0);
   opponentScore = signal(0);
   showPlayground = signal(false);
-
   myShots = signal<number[]>([]);
   opponentShots = signal<number[]>([]);
-
   winner = signal<string | null>(null);
   Math = Math;
-
   isDragging = false;
-
-  angle = 0;
-
   game: IGame | null = null;
-
   goalAudio = new Audio('audio/goal.mp3');
   saveAudio = new Audio('audio/save.mp3');
-
   powerChosen = false;
-
   canShoot = computed(() => {
     const ballAnimationDone = this.ballAnimationDone();
     const goalkieAnimationDone = this.goalkieAnimationDone();
     if (!ballAnimationDone) return false;
     return goalkieAnimationDone !== 'diving';
   });
-
   cachedShot: ICachedShot | null = null;
-
   showTutorial = false;
-
   strikerSteps = tutorialStepsForStriker
-
   goalkieSteps = tutorialStepsForGoalkeeper
-
   intersectionFrame = 0;
-
   rp: DOMRect | null = null;
-
   @Output() gameEnded = new EventEmitter<void>();
-
   @ViewChild('ball') ballRef!: ElementRef;
-
   @ViewChild('goalkie') goalkieRef!: ElementRef;
-
   @ViewChild('player') playerRef!: ElementRef;
-
   @ViewChild('nets') netsRef!: ElementRef;
-
   @ViewChild('playground') playgroundRef!: ElementRef;
 
   private socketService = inject(SocketService);
@@ -224,7 +194,6 @@ export class Play implements OnInit, AfterViewInit {
     this.goalkieDivedClient = true;
   }
 
-
   onMouseMove(e: MouseEvent | PointerEvent) {
     if (!this.isDragging || this.winner() || !this.rp) return;
     const arrowElem = document.getElementById('arrow') as HTMLElement;
@@ -237,14 +206,11 @@ export class Play implements OnInit, AfterViewInit {
 
       if (this.isDragging && arrowElem && e.x !== 0 && e.y !== 0) {
         const YDiff = this.initialArrowPos.y - e.y;
-
         const radians = Math.atan2(this.initialArrowPos.y - e.y, this.initialArrowPos.x - e.x);
-
         const degrees = radians * (180 / Math.PI);
 
         arrowElem.style.height = this.Math.max(132, this.Math.abs(YDiff) * 1.5) + 'px';
         arrowElem.style.transformOrigin = 'bottom';
-        this.angle = degrees > 0 ? 90 - degrees : 90 + degrees;
         arrowElem.style.transform =
           'rotate(' + (degrees > 0 ? 90 - degrees : 90 + degrees) + 'deg)';
         this.ballPos.set(

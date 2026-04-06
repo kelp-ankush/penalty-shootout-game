@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { IGame } from '@org/shared-types';
+import { IGame, IShotComplete } from '@org/shared-types';
 
 @Injectable()
 export class MatchService {
@@ -11,17 +11,14 @@ export class MatchService {
       roomId,
       players,
       turn: players[0],
-
       score: players.reduce((acc, p) => {
         acc[p] = 0;
         return acc;
       }, {}),
-
       shots: players.reduce((acc, p) => {
         acc[p] = [];
         return acc;
       }, {}),
-
       round: 1,
       maxRounds: 5,
       isFinished: false,
@@ -36,12 +33,7 @@ export class MatchService {
     return this.games.find((g) => g.roomId === roomId);
   }
 
-  updateScore(data: {
-    userId: string;
-    roomId: string;
-    isGoal: boolean;
-    turn: string;
-  }) {
+  updateScore(data: IShotComplete): IGame | null {
     const game = this.getGame(data.roomId);
     if (!game || game.isFinished) return null;
 
