@@ -1,0 +1,74 @@
+/* You can add global styles to this file, and also import other style files */
+
+@import 'tailwindcss';
+
+@keyframes slide {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(190px);
+  }
+}
+
+.indicator {
+  animation: slide 1s infinite alternate;
+}
+
+.player {
+  width: 130px;
+  height: 200px;
+  position: absolute;
+
+  left: -150px;
+  top: -50px;
+
+  transform: translate(-50%, 0%);
+
+  z-index: 50;
+
+  /* animation:
+    moveForward 2s linear alternate 0.5s ,
+    kick 2.5s steps(7) infinite; */
+}
+
+@keyframes kick {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: -12480px 0px;
+  }
+}
+
+@keyframes moveForward {
+  from {
+    transform: translate(-50%, 0%) translateX(0px);
+  }
+  to {
+    transform: translate(-50%, -40%) translateX(110px);
+  }
+}
+
+.goalkie {
+  width: 240px;
+  height: 200px;
+  position: absolute;
+  left: 6.9rem;
+  bottom: -36px;
+  transform: translate(0, 0%);
+  /* animation: dive 1.916s steps(46) infinite; */
+}
+
+@keyframes dive {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: -11040px 0px;
+  }
+}
+
+#arrow {
+  touch-action: none;
+}
