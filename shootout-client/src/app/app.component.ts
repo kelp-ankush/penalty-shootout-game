@@ -6,9 +6,11 @@ import {
   OnDestroy,
   signal,
 } from '@angular/core';
-import { SocketService } from './core/services/socket.service';
+import {  SocketService } from './core/services/socket.service';
+import { ImagePreloadService } from './core/services/image-preload.service';
 import { debounceTime, delay, of, Subject, switchMap, takeUntil } from 'rxjs';
 import { IRoom } from './core/models/common.model';
+import { ASSETS } from './core/utils/images.constants';
 
 /**
  * Root component handling room lifecycle and socket events
@@ -47,6 +49,7 @@ export class AppComponent implements OnInit, OnDestroy {
    */
   constructor(
     private readonly socketService: SocketService,
+    private readonly imagePreload: ImagePreloadService,
   ) {
     this.userId = this.generateOrGetUserId();
   }
@@ -82,6 +85,7 @@ export class AppComponent implements OnInit, OnDestroy {
    */
   ngOnInit(): void {
     this.handleUserLeftMessage();
+    this.preloadAssets();
     this.listenToSocketEvents();
   }
 
@@ -107,6 +111,22 @@ export class AppComponent implements OnInit, OnDestroy {
         takeUntil(this.destroy$),
       )
       .subscribe(() => this.userLeft.set(''));
+  }
+
+  /**
+   * Preloads required game assets
+   */
+  private preloadAssets(): void {
+    this.imagePreload.preloadImages([
+      ASSETS.PLAYER.BLUE,
+      ASSETS.PLAYER.RED,
+      ASSETS.GOALKEEPER.JUMP,
+      ASSETS.GOALKEEPER.RIGHT,
+      ASSETS.GOALKEEPER.LEFT,
+      ASSETS.ENVIRONMENT.FIELD,
+      ASSETS.ENVIRONMENT.AUDIENCE,
+      ASSETS.ENVIRONMENT.NETS,
+    ]);
   }
 
   /**
