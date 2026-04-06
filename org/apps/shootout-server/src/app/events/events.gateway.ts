@@ -10,14 +10,8 @@ import {
 import { Server, Socket } from 'socket.io';
 import { RoomService } from './rooms.service';
 import { MatchService } from './match.service';
+import { Game } from '../core/interfaces/game.interface';
 
-/**
- * @export
- * @class EventsGateway
- * @typedef {EventsGateway}
- * @implements {OnGatewayConnection}
- * @implements {OnGatewayDisconnect}
- */
 @WebSocketGateway({
   cors: {
     origin: ['http://localhost:4200', 'https://penalty-shoots-ashy.vercel.app'],
@@ -25,60 +19,37 @@ import { MatchService } from './match.service';
   },
 })
 export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
-  /**
-   *@type {Server}
-   */
   @WebSocketServer()
   server: Server;
 
-  /**
-   *@private
-   * @type {Map<string, string>}
-   */
   private clientIdToUserIdMap: Map<string, string> = new Map();
 
-  /** * Creates an instance of EventsGateway.
-   *
-   * @constructor
-   * @param {RoomService} roomService
-   * @param {MatchService} matchService
-   */
   constructor(
     private roomService: RoomService,
     private matchService: MatchService,
-  ) {}
+  ) { }
 
-  /**
-   *@param {Socket} client
-   */
+
   handleConnection(client: Socket) {
     console.log('client connected:', client.id, client.handshake.auth.userId);
     this.clientIdToUserIdMap.set(
       client.id,
-      client.handshake.auth.userId as string,
+      client.handshake.auth.userId,
     );
     this.server.emit('roomsUpdate', this.roomService.getAvailableRooms());
   }
 
-  /**
-   *@param {Socket} client
-   */
   handleDisconnect(client: Socket) {
-    console.log(
-      'client disconnected:',
-      client.id,
-      client.handshake.auth.userId,
-    );
+    console.log('client disconnected:', client.id, client.handshake.auth.userId);
 
-    const roomIds = this.roomService.removeUserFromRooms(
-      this.clientIdToUserIdMap.get(client.id) || '',
-    );
+    const userId = this.clientIdToUserIdMap.get(client.id) || '';
+    const roomIds = this.roomService.removeUserFromRooms(userId);
 
     for (const roomId of roomIds) {
       this.server.to(roomId).emit('roomUpdate', {
         event: 'user-left',
         msg: `Your opponent has left the room, start a fresh game!`,
-        userId: this.clientIdToUserIdMap.get(client.id),
+        userId,
       });
     }
     this.server.emit('roomsUpdate', this.roomService.getAvailableRooms());
@@ -86,16 +57,9 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.clientIdToUserIdMap.delete(client.id);
   }
 
-  /**
-   *@async
-   * @param {Socket} client
-   * @param {string} userId
-   * @returns {unknown}
-   */
   @SubscribeMessage('createRoom')
   async handleCreateRoom(@ConnectedSocket() client: Socket) {
-    const userId = this.clientIdToUserIdMap.get(client.id)!;
-
+    const userId = this.clientIdToUserIdMap.get(client.id) || "";
     const room = this.roomService.createRoom(userId);
 
     await client.join(room.id);
@@ -105,14 +69,9 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     return { event: 'roomCreated', data: room };
   }
 
-  /**
-   *@async
-   * @param {Socket} client
-   * @returns {unknown}
-   */
   @SubscribeMessage('joinRoom')
   async handleJoinRoom(@ConnectedSocket() client: Socket) {
-    const userId = this.clientIdToUserIdMap.get(client.id)!;
+    const userId = this.clientIdToUserIdMap.get(client.id) || "";
     const room = this.roomService.joinRoom(userId);
 
     if (!room) {
@@ -127,18 +86,13 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const game = this.handleStartGame(room.id);
     return { event: 'joinedRoom', data: room, game };
   }
-  /**
-   *@async
-   * @param {Socket} client
-   * @param {{ userId: string; roomId: string }} data
-   * @returns {unknown}
-   */
+
   @SubscribeMessage('joinSpecificRoom')
   async handleJoinSpecificRoom(
     @ConnectedSocket() client: Socket,
     @MessageBody() data: { roomId: string },
   ) {
-    const userId = this.clientIdToUserIdMap.get(client.id)!;
+    const userId = this.clientIdToUserIdMap.get(client.id) || '';
     const room = this.roomService.joinSpecificRoom(userId, data.roomId);
 
     if (!room) {
@@ -155,11 +109,7 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     return { event: 'joinedRoom', data: room, game };
   }
 
-  /**
-   *@param {string} roomId
-   * @returns {Game}
-   */
-  handleStartGame(roomId: string) {
+  handleStartGame(roomId: string): Game {
     const room = this.roomService.getRoomByRoomId(roomId);
     if (!room) return;
 
@@ -169,23 +119,13 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     return game;
   }
 
-  /**
-   *@param {{
-   *       userId: string;
-   *       roomId: string;
-   *       power: string;
-   *       destPos: { x: string; y: string };
-   *     }} data
-   */
   @SubscribeMessage('takeShot')
-  handleTakeShotGame(
-    @MessageBody()
-    data: {
-      userId: string;
-      roomId: string;
-      power: string;
-      destPos: { x: string; y: string };
-    },
+  handleTakeShotGame(@MessageBody() data: {
+    userId: string;
+    roomId: string;
+    power: string;
+    destPos: { x: string; y: string };
+  },
   ) {
     const game = this.matchService.getGame(data.roomId);
     if (!game || game.isFinished) return;
@@ -193,14 +133,6 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.server.to(data.roomId).emit('shotInformation', { data, game });
   }
 
-  /**
-   *@param {{
-   *       userId: string;
-   *       roomId: string;
-   *       isGoal: boolean;
-   *       turn: string;
-   *     }} data
-   */
   @SubscribeMessage('shotComplete')
   handleShotComplete(
     @MessageBody()
@@ -220,13 +152,6 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.server.to(data.roomId).emit('resultUpdated', { game: updatedGame });
   }
 
-  /**
-   *@param {{
-   *       userId: string;
-   *       roomId: string;
-   *       destPos: { x: string; y: string };
-   *     }} data
-   */
   @SubscribeMessage('goalkieDive')
   handleGoalkieDive(
     @MessageBody()
@@ -239,14 +164,6 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.server.to(data.roomId).emit('goalkieDive', data);
   }
 
-  /**
-   *@param {Socket} client
-   * @param {{
-   *       userId: string;
-   *       roomId: string;
-   *       eventType: string;
-   *     }} data
-   */
   @SubscribeMessage('leaveRoom')
   handleLeaveRoom(
     @ConnectedSocket() client: Socket,

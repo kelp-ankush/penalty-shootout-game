@@ -1,25 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { randomUUID } from 'crypto';
-
-/**
- * @export
- * @interface IRoom
- * @typedef {IRoom}
- */
-export interface IRoom {
-  /**
-   *@type {string}
-   */
-  id: string;
-  /**
-   *@type {string[]}
-   */
-  users: string[];
-  /**
-   *@type {boolean}
-   */
-  isLocked: boolean;
-}
+import { IRoom } from '../core/interfaces/room.interface';
 
 /**
  * @export
@@ -28,31 +9,16 @@ export interface IRoom {
  */
 @Injectable()
 export class RoomService {
-  /**
-   *@private
-   * @type {IRoom[]}
-   */
   private rooms: IRoom[] = [];
 
-  /**
-   *@returns {*}
-   */
   getAvailableRooms() {
     return this.rooms.filter((room) => !room.isLocked);
   }
 
-  /**
-   *@param {string} roomId
-   * @returns {*}
-   */
   getRoomByRoomId(roomId: string) {
     return this.rooms.find((room) => room.id === roomId);
   }
 
-  /**
-   *@param {string} userId
-   * @returns {IRoom}
-   */
   createRoom(userId: string): IRoom {
     const room: IRoom = {
       id: randomUUID(),
@@ -64,10 +30,6 @@ export class RoomService {
     return room;
   }
 
-  /**
-   *@param {string} userId
-   * @returns {(IRoom | null)}
-   */
   joinRoom(userId: string): IRoom | null {
     const availabeRoom = this.rooms.find(
       (room) => !room.isLocked && room.users.length === 1,
@@ -84,11 +46,6 @@ export class RoomService {
     return availabeRoom;
   }
 
-  /**
-   *@param {string} userId
-   * @param {string} roomId
-   * @returns {(IRoom | null)}
-   */
   joinSpecificRoom(userId: string, roomId: string): IRoom | null {
     const availabeRoom = this.rooms.find(
       (room) => !room.isLocked && room.users.length === 1 && room.id === roomId,
@@ -105,10 +62,6 @@ export class RoomService {
     return availabeRoom;
   }
 
-  /**
-   *@param {string} userId
-   * @param {string} roomId
-   */
   leaveRoom(userId: string, roomId: string) {
     const room = this.rooms.find((room) => room.id === roomId);
     if (!room) return;
@@ -120,10 +73,6 @@ export class RoomService {
     }
   }
 
-  /**
-   *@param {string} userId
-   * @returns {{}}
-   */
   removeUserFromRooms(userId: string) {
     const roomIds: string[] = [];
 

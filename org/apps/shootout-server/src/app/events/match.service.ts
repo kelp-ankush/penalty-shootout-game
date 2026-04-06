@@ -1,69 +1,11 @@
 import { Injectable } from '@nestjs/common';
+import { Game } from '../core/interfaces/game.interface';
 
-/**
- * @export
- * @interface Game
- * @typedef {Game}
- */
-export interface Game {
-  /**
-   *@type {string}
-   */
-  roomId: string;
-  /**
-   *@type {string[]}
-   */
-  players: string[];
-  /**
-   *@type {string}
-   */
-  turn: string;
-
-  /**
-   *@type {Record<string, number>}
-   */
-  score: Record<string, number>;
-
-  /**
-   *@type {Record<string, number[]>}
-   */
-  shots: Record<string, number[]>;
-  /**
-   *@type {number}
-   */
-  round: number;
-  /**
-   *@type {number}
-   */
-  maxRounds: number;
-  /**
-   *@type {boolean}
-   */
-  isFinished: boolean;
-  /**
-   *@type {(string | null)}
-   */
-  winner: string | null;
-}
-
-/**
- * @export
- * @class MatchService
- * @typedef {MatchService}
- */
 @Injectable()
 export class MatchService {
-  /**
-   *@private
-   * @type {Game[]}
-   */
+
   private games: Game[] = [];
 
-  /**
-   *@param {string} roomId
-   * @param {string[]} players
-   * @returns {Game}
-   */
   createGame(roomId: string, players: string[]): Game {
     const game: Game = {
       roomId,
@@ -90,23 +32,10 @@ export class MatchService {
     return game;
   }
 
-  /**
-   *@param {string} roomId
-   * @returns {*}
-   */
   getGame(roomId: string) {
     return this.games.find((g) => g.roomId === roomId);
   }
 
-  /**
-   *@param {{
-   *     userId: string;
-   *     roomId: string;
-   *     isGoal: boolean;
-   *     turn: string;
-   *   }} data
-   * @returns {*}
-   */
   updateScore(data: {
     userId: string;
     roomId: string;
