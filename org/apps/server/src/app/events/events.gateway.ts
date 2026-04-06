@@ -11,7 +11,7 @@ import { Server, Socket } from 'socket.io';
 import { RoomService } from './rooms.service';
 import { MatchService } from './match.service';
 import { Logger } from '@nestjs/common';
-import { EventType, IGame, IGoalieDive, ILeaveRoom, IRoom, IShotComplete, IShotData, SubscriptionType } from '@org/shared-types'
+import { EventType, IGame, IGoalieDive, ILeaveRoom, IRoom, IShotComplete, IShotData, SubscriptionType } from '@org/shared'
 
 @WebSocketGateway({
   cors: {

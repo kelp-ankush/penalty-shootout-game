@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Socket, io } from 'socket.io-client';
 import { environment } from '../../../environments/environment';
-import { IGame, IGoalieDive, IResultUpdateEvent, IRoom, IRoomUpdateEvent, IShotComplete, IShotData, IShotEvent, SubscriptionType } from '@org/shared-types';
+import { IGame, IGoalieDive, IResultUpdateEvent, IRoom, IRoomUpdateEvent, IShotComplete, IShotData, IShotEvent, SubscriptionType } from '@org/shared';
 
 
 @Injectable({

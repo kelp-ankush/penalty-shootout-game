@@ -12,7 +12,7 @@ import { Play } from './features/play/components/play.component';
 import { SocketService } from './core/services/socket.service';
 import { ImagePreloadService } from './core/services/image-preload.service';
 import { inject } from '@angular/core';
-import { EventType, IRoom, IRoomUpdateEvent } from "@org/shared-types"
+import { EventType, IRoom, IRoomUpdateEvent } from "@org/shared"
 
 @Component({
   selector: 'app-root',

@@ -1,6 +1,5 @@
 export enum EventType {
   USER_LEFT = 'user-left',
-  Error = 'error',
 }
 
 export enum SubscriptionType {

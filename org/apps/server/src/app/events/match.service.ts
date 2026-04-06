@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { IGame, IShotComplete } from '@org/shared-types';
+import { IGame, IShotComplete } from '@org/shared';
 
 @Injectable()
 export class MatchService {

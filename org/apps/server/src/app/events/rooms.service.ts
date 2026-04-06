@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { IRoom } from '@org/shared-types';
+import { IRoom } from '@org/shared';
 import { randomUUID } from 'crypto';
 
 @Injectable()

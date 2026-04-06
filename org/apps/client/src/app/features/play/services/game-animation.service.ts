@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { IPoint } from '@org/shared-types';
+import { IPoint } from '@org/shared';
 import { gsap } from 'gsap';
 
 @Injectable({ providedIn: 'root' })

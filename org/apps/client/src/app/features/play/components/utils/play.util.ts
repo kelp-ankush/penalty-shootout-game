@@ -1,4 +1,4 @@
-import { IPoint } from "@org/shared-types";
+import { IPoint } from '@org/shared';
 import { IRect } from "../../../../core/interfaces/game.interface";
 
 

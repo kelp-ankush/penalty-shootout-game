@@ -25,7 +25,7 @@ import {
   getViewPortCoords,
 } from './utils/play.util';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { ICachedShot, IGame, IGoalieDiveEvent, IResultUpdateEvent, IShotEvent, IPoint } from '@org/shared-types';
+import { ICachedShot, IGame, IGoalieDiveEvent, IResultUpdateEvent, IShotEvent, IPoint } from '@org/shared';
 import { ASSETS } from '../../../core/utils/images.constants';
 import { SocketService } from '../../../core/services/socket.service';
 import { GameAnimationService } from '../services/game-animation.service';
