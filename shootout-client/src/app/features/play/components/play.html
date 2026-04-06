@@ -1,0 +1,213 @@
+<div class="h-190 w-200" #playground>
+  @if (showPlayground() && game) {
+    <div
+      class="flex items-center justify-between gap-4 px-4 py-2 text-sm opacity-90 border-b bg-linear-to-r from-green-900 via-black to-green-800"
+    >
+      <h4 class="tracking-wide">
+        Room : <span class="font-mono">{{ roomId() }}</span>
+      </h4>
+      <h5 class="font-semibold">Round: {{ Math.ceil(round() / 2) }} / 5</h5>
+    </div>
+    @if (winner()) {
+      <div
+        class="flex items-center justify-between gap-4 px-4 py-2 opacity-90 border-b bg-linear-to-r from-green-900 via-black to-green-800"
+      >
+        @if (winner() === userId()) {
+          <span class="text-green-400 text-lg font-bold tracking-wide animate-pulse"
+            >🏆 You Win!</span
+          >
+        } @else if (winner() === 'draw') {
+          <span class="text-yellow-300 text-lg font-bold tracking-wide animate-pulse">🤝 Draw</span>
+        } @else {
+          <span class="text-white text-lg font-bold tracking-wide animate-pulse">😔 You Lose</span>
+        }
+      </div>
+    }
+
+    <div
+      class="pt-6 relative grid grid-cols-6 px-2"
+      [style.background]="'url(' + audienceImage + ') no-repeat bottom/cover'"
+    >
+      <div></div>
+      <div
+        class="h-48 w-120 mx-auto relative col-span-4 rounded-lg overflow-visible cursor-pointer"
+      >
+        <img [src]="netsImage" class="h-48 w-120 mx-auto relative brightness-90 contrast-110" />
+        <div
+          class="h-52 w-116 left-2 absolute top-2"
+          #nets
+          id="nets"
+          (click)="userId() === game.turn ? null : onGoalkieChooseDirection($event)"
+        ></div>
+
+        <div
+          [style.background]="
+            goalkieDiveDirection() === '' ? null : 'url(' + goalkieDiveDirection() + ')'
+          "
+          class="goalkie z-30"
+          #goalkie
+          id="goalkie"
+          (click)="userId() === game.turn ? null : onGoalkieChooseDirection($event)"
+        ></div>
+
+        @if (game.turn === userId()) {
+          <div
+            class="absolute -bottom-50 md:left-[49.75%] left-[49.5%] w-1.5 h-33 bg-[#d8e2e6] rounded cursor-grab active:cursor-grabbing z-1000"
+            id="arrow"
+            (mousedown)="onMouseDown($event)"
+            (pointerdown)="onPointerDown($event)"
+          ></div>
+        }
+      </div>
+      <div></div>
+    </div>
+
+    <div
+      class="relative w-full flex flex-col items-center justify-start h-[calc(760px-254.5px)]"
+      [style.background]="'url(' + fieldImage + ') no-repeat center / cover'"
+    >
+      <div class="h-0 border-b border bottom-0 w-full border-[#d8e2e6] left-1 z-0"></div>
+
+      <div class="h-30 border-2 w-3/4 border-t-0 border-[#d8e2e6] z-0 relative"></div>
+      <div class="flex items-center justify-center gap-60 mt-2">
+        <button
+          [ngClass]="[
+            'px-3 py-2 bg-linear-to-r from-green-900 via-black to-green-800 cursor-pointer rounded-sm font-semibold transition-all text-sm ',
+            'hover:scale-105 ',
+            'active:scale-95',
+            userId() === game.turn ? '' : 'invisible',
+          ]"
+          (click)="onLockDirection()"
+          id="lock-aim"
+        >
+          Lock aim
+        </button>
+        <div
+          [ngClass]="[
+            'w-48 h-10 relative ml-16 border rounded overflow-hidden shadow-inner',
+            'bg-linear-to-r from-yellow-300 via-orange-400 to-red-500',
+            userId() === game.turn ? '' : 'invisible',
+          ]"
+          id="power-container"
+          (click)="onLockPower()"
+        >
+          <div
+            class="relative h-12 -top-3 -left-0.5 bg-white w-0.5 mt-2 shadow"
+            id="indicator"
+          ></div>
+        </div>
+      </div>
+
+      <div class="rounded-full mx-auto text-3xl cursor-pointer mt-16 relative">
+        <div #ball id="ball" class="z-40 absolute -left-3.75 -top-0.75">⚽</div>
+        <div
+          class="player"
+          [style.background]="playerImage() === '' ? null : 'url(' + playerImage() + ') no-repeat'"
+          #player
+          id="player"
+        ></div>
+      </div>
+
+      <div class="invisible h-40"></div>
+      <div
+        class="flex items-center justify-around gap-2 max-h-20 min-h-12 w-full bg-linear-to-r from-green-900 via-black to-green-800"
+      >
+        <div class="flex flex-col items-center gap-2">
+          <span class="text-xs text-center"> Your Score</span>
+          <div class="flex gap-2 items-center">
+            @for (s of myShots(); track $index) {
+              <div class="text-xs">{{ s === 1 ? '⚽' : s === 0 ? '❌' : '⚪' }}</div>
+            }
+          </div>
+        </div>
+        <div class="flex flex-col items-center gap-2">
+          <span class="text-xs"> Opponent's Score</span>
+          <div class="flex gap-2 items-center">
+            @for (s of opponentShots(); track $index) {
+              <div class="text-xs">{{ s === 1 ? '⚽' : s === 0 ? '❌' : '⚪' }}</div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button
+      class="text-white absolute bottom-1 right-1 text-xs bg-linear-to-r from-green-900 via-black to-green-800 px-2 py-1 rounded cursor-pointer"
+      (click)="showTutorial = true"
+    >
+      Help?
+    </button>
+
+    @if (showTutorial) {
+      <div
+        class="fixed inset-0 z-2000 flex items-center justify-center bg-black/70 backdrop-blur-sm"
+      >
+        <div
+          class="bg-linear-to-br from-green-900 via-black to-green-800 text-white w-[90%] max-w-md rounded-xl shadow-xl p-5 relative"
+        >
+          <button
+            class="absolute top-2 right-3 text-xl hover:scale-110 cursor-pointer"
+            (click)="showTutorial = false"
+          >
+            ✖
+          </button>
+
+          <h2 class="text-xl font-bold mb-4 text-center tracking-wide">⚽ How to Play</h2>
+          <div>
+            <h3 class="text-lg font-semibold mb-2 text-green-400">As a Striker:</h3>
+            <ul class="space-y-3 text-sm">
+              @for (step of tutorialStepsForStriker; track $index) {
+                <li class="flex items-start gap-2">
+                  <span class="text-green-400 font-bold">{{ $index + 1 }}.</span>
+                  <span>{{ step }}</span>
+                </li>
+              }
+            </ul>
+          </div>
+          <div class="mt-5">
+            <h3 class="text-lg font-semibold mb-2 text-green-400">As a Goalkeeper:</h3>
+            <ul class="space-y-3 text-sm">
+              @for (step of tutorialStepsForGoalkeeper; track $index) {
+                <li class="flex items-start gap-2">
+                  <span class="text-green-400 font-bold">{{ $index + 1 }}.</span>
+                  <span>{{ step }}</span>
+                </li>
+              }
+            </ul>
+          </div>
+
+          <p class="text-xs mt-5 text-gray-400">
+            1. Don't <span class="text-red-500 text-sm">RESIZE</span> the window or your game will
+            end!
+          </p>
+          <p class="text-xs mt-1 text-gray-400">
+            2. Click the help button in the bottom-right corner to reopen tutorial.
+          </p>
+
+          <div class="mt-5 flex justify-center">
+            <button
+              class="px-4 py-2 bg-green-600 hover:bg-green-500 rounded-md font-semibold transition cursor-pointer"
+              (click)="showTutorial = false"
+            >
+              Got it!
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+  } @else {
+    <div
+      class="h-full w-full bg-linear-to-br from-green-900 via-black to-green-800 flex flex-col items-center justify-center text-white"
+    >
+      <div class="text-xl mb-2 animate-pulse">Waiting for opponent...</div>
+
+      <div class="text-sm opacity-70 mb-4">Room {{ roomId() }}</div>
+
+      <div class="flex gap-2">
+        <div class="w-2 h-2 bg-white rounded-full animate-bounce"></div>
+        <div class="w-2 h-2 bg-white rounded-full animate-bounce delay-150"></div>
+        <div class="w-2 h-2 bg-white rounded-full animate-bounce delay-300"></div>
+      </div>
+    </div>
+  }
+</div>

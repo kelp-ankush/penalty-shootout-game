@@ -6,3 +6,12 @@ export interface IRoom {
   users: string[];
   isLocked: boolean;
 }
+
+/** Game state */
+export interface IGame {
+  turn: string;
+  players: string[];
+  score: Record<string, number>;
+  shots: Record<string, number[]>;
+  winner?: string | null;
+}

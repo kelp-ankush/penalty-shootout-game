@@ -6,11 +6,12 @@ import {
   OnDestroy,
   signal,
 } from '@angular/core';
-import {  SocketService } from './core/services/socket.service';
-import { ImagePreloadService } from './core/services/image-preload.service';
 import { debounceTime, delay, of, Subject, switchMap, takeUntil } from 'rxjs';
 import { IRoom } from './core/models/common.model';
 import { ASSETS } from './core/utils/images.constants';
+import { SocketService } from './core/services/socket.service';
+import { ImagePreloadService } from './core/services/image-preload.service';
+import { Play } from './features/play/components/play.component';
 
 /**
  * Root component handling room lifecycle and socket events
@@ -18,6 +19,7 @@ import { ASSETS } from './core/utils/images.constants';
 @Component({
   selector: 'app-root',
   templateUrl: './app.html',
+  imports: [Play],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent implements OnInit, OnDestroy {

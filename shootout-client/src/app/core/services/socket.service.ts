@@ -3,9 +3,15 @@ import { Observable } from 'rxjs';
 import { Socket, io } from 'socket.io-client';
 import { environment } from '../../../environments/environment';
 import {
+  IGoalieDive,
   IRoomUpdateEvent,
+  IShotComplete,
+  IShotData,
+  IShotResult,
 } from '../models/socket.model';
-import { IRoom } from '../models/common.model';
+import { IGame, IRoom } from '../models/common.model';
+import { IShotEvent } from '../../features/play/components/models/play.model';
+
 /**
  * Handles all socket communication
  */
@@ -83,6 +89,26 @@ export class SocketService {
     this.emit('joinSpecificRoom', { roomId });
   }
 
+  /** Starts game */
+  startGame(roomId: string): void {
+    this.emit<string>('startGame', roomId);
+  }
+
+  /** Sends shot event */
+  shootBall(data: IShotData): void {
+    this.emit<IShotData>('takeShot', data);
+  }
+
+  /** Sends shot completion */
+  shotComplete(data: IShotComplete): void {
+    this.emit<IShotComplete>('shotComplete', data);
+  }
+
+  /** Sends goalie dive */
+  goalkieDive(data: IGoalieDive): void {
+    this.emit<IGoalieDive>('goalkieDive', data);
+  }
+
   /** Leaves room */
   leaveRoom(roomId: string, eventType: string): void {
     this.emit('leaveRoom', {
@@ -109,5 +135,25 @@ export class SocketService {
   /** Room created */
   onRoomCreated(): Observable<IRoom> {
     return this.listen<IRoom>('roomCreated');
+  }
+
+  /** Game start */
+  onGameStart(): Observable<IGame> {
+    return this.listen('initiatedGame');
+  }
+
+  /** Shot info */
+  onTakeShot(): Observable<IShotEvent> {
+    return this.listen<IShotEvent>('shotInformation');
+  }
+
+  /** Result update */
+  onResultUpdate(): Observable<IShotResult> {
+    return this.listen<IShotResult>('resultUpdated');
+  }
+
+  /** Goalie dive event */
+  onGoalkieDive(): Observable<IGoalieDive> {
+    return this.listen<IGoalieDive>('goalkieDive');
   }
 }

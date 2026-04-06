@@ -60,7 +60,11 @@
     </div>
   } @else {
     <div class=" flex items-center justify-center">
-     <!-- TODO: add play component here -->
+      <app-play
+        [userId]="userId"
+        [roomId]="currentRoom()?.id ?? ''"
+        (gameEnded)="leaveRoom()"
+      ></app-play>
     </div>
   }
 </div>
