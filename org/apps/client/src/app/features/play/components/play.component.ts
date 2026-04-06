@@ -23,16 +23,15 @@ import {
   checkGoal,
   getContainerCoords,
   getViewPortCoords,
-  jumphitboxes,
-  lefthitboxes,
-  righthitboxes,
 } from './utils/play.util';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ICachedShot, IGame, IGoalieDiveEvent, IResultUpdateEvent, IShotEvent, IPoint } from '@org/shared-types';
 import { ASSETS } from '../../../core/utils/images.constants';
 import { SocketService } from '../../../core/services/socket.service';
 import { GameAnimationService } from '../services/game-animation.service';
-import { tutorialStepsForGoalkeeper, tutorialStepsForStriker } from './utils/play.constants';
+import { jumpHitBoxes, leftHitBoxes, rightHitBoxes, tutorialStepsForGoalkeeper, tutorialStepsForStriker } from './utils/play.constants';
+import { IFrame, IRect } from '../../../core/interfaces/game.interface';
+import { GoalkieAction } from '../../../core/enums/goalkie-dive.enum';
 
 
 @Component({
@@ -50,7 +49,7 @@ export class Play implements OnInit, AfterViewInit {
   shotTaken = signal(false);
   shouldGoalkieDive = false;
   goalkieDivedClient = false;
-  goalkieAnimationDone = signal<string>('not-dived');
+  goalkieAnimationDone = signal<string>(GoalkieAction.NOT_DIVED);
   ballAnimationDone = signal<boolean>(false);
   goalkieDiveDirection = signal<string>(ASSETS.GOALKEEPER.LEFT);
   playerImage = signal<string>(ASSETS.PLAYER.BLUE);
@@ -80,7 +79,7 @@ export class Play implements OnInit, AfterViewInit {
     const ballAnimationDone = this.ballAnimationDone();
     const goalkieAnimationDone = this.goalkieAnimationDone();
     if (!ballAnimationDone) return false;
-    return goalkieAnimationDone !== 'diving';
+    return goalkieAnimationDone !== GoalkieAction.DIVING;
   });
   cachedShot: ICachedShot | null = null;
   showTutorial = false;
@@ -173,8 +172,8 @@ export class Play implements OnInit, AfterViewInit {
     if (
       !this.shouldGoalkieDive ||
       this.goalkieDivedClient ||
-      this.goalkieAnimationDone() === 'dive-completed' ||
-      this.goalkieAnimationDone() === 'diving'
+      this.goalkieAnimationDone() === GoalkieAction.DIVE_COMPLETED ||
+      this.goalkieAnimationDone() === GoalkieAction.DIVING
     )
       return;
 
@@ -361,7 +360,7 @@ export class Play implements OnInit, AfterViewInit {
 
     this.powerChosen = false;
 
-    this.goalkieAnimationDone.set('not-dived');
+    this.goalkieAnimationDone.set(GoalkieAction.NOT_DIVED);
     this.ballAnimationDone.set(false);
     this.cachedShot = null;
     this.intersectionFrame = 0;
@@ -406,9 +405,9 @@ export class Play implements OnInit, AfterViewInit {
     if (!ball || !player) return;
 
     const vertex = this.initialBallPos;
-    const point2 = getViewPortCoords(data.destPos, this.rp);
+    const point = getViewPortCoords(data.destPos, this.rp);
 
-    const coords: IPoint[] = calculateTrajectory(vertex, point2);
+    const coords: IPoint[] = calculateTrajectory(vertex, point);
 
     this.animatePlayer(player);
     this.gameAnimationService.animateBall(ball, coords, time, this.handleCheckGoal.bind(this));
@@ -425,20 +424,15 @@ export class Play implements OnInit, AfterViewInit {
     const goalkie = this.goalkieRef?.nativeElement as HTMLElement;
     const nets = this.netsRef?.nativeElement as HTMLElement;
 
-    let frame: {
-      x: number;
-      y: number;
-      width: number;
-      height: number;
-    } | null = null;
+    let frame: IFrame | null = null;
     const frameNumber = this.Math.min(this.intersectionFrame, 45);
 
     if (this.goalkieDiveDirection().includes('YAMJkV')) {
-      frame = lefthitboxes[frameNumber];
+      frame = leftHitBoxes[frameNumber];
     } else if (this.goalkieDiveDirection().includes('YAMEJh')) {
-      frame = righthitboxes[frameNumber];
+      frame = rightHitBoxes[frameNumber];
     } else {
-      frame = jumphitboxes[frameNumber];
+      frame = jumpHitBoxes[frameNumber];
     }
 
     if (!goalkie || !nets || !ball || !frame) return;
@@ -447,7 +441,7 @@ export class Play implements OnInit, AfterViewInit {
     const t = goalkie.getBoundingClientRect();
     const n = nets.getBoundingClientRect();
 
-    const keeperBox = {
+    const keeperBox: IRect = {
       top: t.top + frame.y,
       left: t.left + frame.x,
       bottom: t.top + frame.y + frame.height,
@@ -508,9 +502,9 @@ export class Play implements OnInit, AfterViewInit {
       this.gameAnimationService.animateGoalkie(
         goalkie,
         xDiff,
-        this.setGoalkieAnimationDone.bind(this, 'diving'),
+        this.setGoalkieAnimationDone.bind(this, GoalkieAction.DIVING),
         (frame: number) => this.updateCurrentIntersectionFrame(frame),
-        this.setGoalkieAnimationDone.bind(this, 'dived'),
+        this.setGoalkieAnimationDone.bind(this, GoalkieAction.DIVED),
       );
     }
   }
@@ -575,12 +569,12 @@ export class Play implements OnInit, AfterViewInit {
   }
 
   private setGoalkieAnimationDone(status: string) {
-    if (status === 'dived' && !this.ballAnimationDone()) {
-      this.goalkieAnimationDone.set('not-dived');
+    if (status === GoalkieAction.DIVED && !this.ballAnimationDone()) {
+      this.goalkieAnimationDone.set(GoalkieAction.NOT_DIVED);
       this.shouldGoalkieDive = true;
       this.goalkieDivedClient = false;
-    } else if (status === 'dived' && this.ballAnimationDone()) {
-      this.goalkieAnimationDone.set('dive-completed');
+    } else if (status === GoalkieAction.DIVED && this.ballAnimationDone()) {
+      this.goalkieAnimationDone.set(GoalkieAction.DIVE_COMPLETED);
       this.shouldGoalkieDive = false;
       this.goalkieDivedClient = true;
     } else {

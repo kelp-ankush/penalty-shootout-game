@@ -36,6 +36,25 @@ export class AppComponent implements OnInit, OnDestroy {
     this.userId = this.generateOrGetUserId();
   }
 
+  ngOnInit(): void {
+    this.handleUserLeftMessage();
+    this.preloadAssets();
+    this.listenToSocketEvents();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+    this.userLeft$.complete();
+  }
+
+  @HostListener('window:resize')
+  onResize(): void {
+    if (this.currentRoom()) {
+      this.leaveRoom(EventType.USER_LEFT);
+    }
+  }
+
   private generateOrGetUserId(): string {
     let localUserId = window.localStorage.getItem('userId');
 
@@ -48,25 +67,6 @@ export class AppComponent implements OnInit, OnDestroy {
 
     return localUserId;
   }
-
-  @HostListener('window:resize')
-  onResize(): void {
-    if (this.currentRoom()) {
-      this.leaveRoom(EventType.USER_LEFT);
-    }
-  }
-
-  ngOnInit(): void {
-    this.handleUserLeftMessage();
-    this.preloadAssets();
-    this.listenToSocketEvents();
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
 
   private handleUserLeftMessage(): void {
     this.userLeft$
@@ -81,7 +81,6 @@ export class AppComponent implements OnInit, OnDestroy {
       .subscribe(() => this.userLeft.set(''));
   }
 
-
   private preloadAssets(): void {
     this.imagePreloadService.preloadImages([
       ASSETS.PLAYER.BLUE,
@@ -94,7 +93,6 @@ export class AppComponent implements OnInit, OnDestroy {
       ASSETS.ENVIRONMENT.NETS,
     ]);
   }
-
 
   private listenToSocketEvents(): void {
     this.socketService
@@ -133,7 +131,6 @@ export class AppComponent implements OnInit, OnDestroy {
       });
   }
 
-
   private handleUserLeftEvent(data: IRoomUpdateEvent): void {
     this.currentRoom.set(null);
     window.localStorage.removeItem('current-room');
@@ -146,11 +143,9 @@ export class AppComponent implements OnInit, OnDestroy {
     this.userLeft$.next(message);
   }
 
-
   createRoom(): void {
     this.socketService.createRoom();
   }
-
 
   joinRoom(): void {
     this.socketService.joinRoom();
