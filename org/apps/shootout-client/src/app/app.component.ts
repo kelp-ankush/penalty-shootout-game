@@ -14,9 +14,6 @@ import { ImagePreloadService } from './core/services/image-preload.service';
 import { inject } from '@angular/core';
 import { EventType, IRoom, IRoomUpdateEvent } from "@org/shared-types"
 
-/**
- * Root component handling room lifecycle and socket events
- */
 @Component({
   selector: 'app-root',
   templateUrl: './app.html',
@@ -24,43 +21,21 @@ import { EventType, IRoom, IRoomUpdateEvent } from "@org/shared-types"
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent implements OnInit, OnDestroy {
-  /** Unique user identifier */
   userId = '';
-
-  /** Available rooms list */
   rooms = signal<IRoom[]>([]);
-
-  /** Current UI status message */
   status = signal<string>('');
-
-  /** Currently active room */
   currentRoom = signal<IRoom | null>(null);
-
-  /** Message when a user leaves */
   userLeft = signal<string>('');
-
-  /** Emits user-left messages */
-  private readonly userLeft$ = new Subject<string>();
-
-  /** Destroy notifier for unsubscribing */
-  private readonly destroy$ = new Subject<void>();
-
   socketService = inject(SocketService);
   imagePreloadService = inject(ImagePreloadService);
+  
+  private readonly userLeft$ = new Subject<string>();
+  private readonly destroy$ = new Subject<void>();
 
-  /**
-   * Initializes component and assigns user ID
-   * @param socketService Handles socket communication
-   * @param imagePreload Service for preloading images
-   */
   constructor() {
     this.userId = this.generateOrGetUserId();
   }
 
-  /**
-   * Generates or retrieves user ID from localStorage
-   * @returns Generated or existing user ID
-   */
   private generateOrGetUserId(): string {
     let localUserId = window.localStorage.getItem('userId');
 
@@ -74,10 +49,6 @@ export class AppComponent implements OnInit, OnDestroy {
     return localUserId;
   }
 
-  /**
-   * Handles window resize event
-   * Leaves room if user resizes screen
-   */
   @HostListener('window:resize')
   onResize(): void {
     if (this.currentRoom()) {
@@ -85,26 +56,18 @@ export class AppComponent implements OnInit, OnDestroy {
     }
   }
 
-  /**
-   * Lifecycle hook - Initializes subscriptions and preload logic
-   */
   ngOnInit(): void {
     this.handleUserLeftMessage();
     this.preloadAssets();
     this.listenToSocketEvents();
   }
 
-  /**
-   * Cleans up subscriptions
-   */
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
   }
 
-  /**
-   * Handles debounced user-left messages
-   */
+
   private handleUserLeftMessage(): void {
     this.userLeft$
       .pipe(
@@ -118,9 +81,7 @@ export class AppComponent implements OnInit, OnDestroy {
       .subscribe(() => this.userLeft.set(''));
   }
 
-  /**
-   * Preloads required game assets
-   */
+
   private preloadAssets(): void {
     this.imagePreloadService.preloadImages([
       ASSETS.PLAYER.BLUE,
@@ -134,9 +95,7 @@ export class AppComponent implements OnInit, OnDestroy {
     ]);
   }
 
-  /**
-   * Subscribes to all socket events
-   */
+
   private listenToSocketEvents(): void {
     this.socketService
       .onRoomsUpdate()
@@ -174,10 +133,7 @@ export class AppComponent implements OnInit, OnDestroy {
       });
   }
 
-  /**
-   * Handles user-left socket event
-   * @param data Event payload
-   */
+
   private handleUserLeftEvent(data: IRoomUpdateEvent): void {
     this.currentRoom.set(null);
     window.localStorage.removeItem('current-room');
@@ -190,32 +146,20 @@ export class AppComponent implements OnInit, OnDestroy {
     this.userLeft$.next(message);
   }
 
-  /**
-   * Creates a new room
-   */
+
   createRoom(): void {
     this.socketService.createRoom();
   }
 
-  /**
-   * Joins a random room
-   */
+
   joinRoom(): void {
     this.socketService.joinRoom();
   }
 
-  /**
-   * Joins a specific room
-   * @param roomId Room identifier
-   */
   joinSpecificRoom(roomId: string): void {
     this.socketService.joinSpecificRoom(roomId);
   }
 
-  /**
-   * Leaves the current room
-   * @param eventType Optional event type
-   */
   leaveRoom(eventType = ''): void {
     const room = this.currentRoom();
 

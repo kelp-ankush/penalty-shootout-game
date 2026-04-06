@@ -1,6 +1,3 @@
-/**
- * Game asset URLs
- */
 export const ASSETS = {
   PLAYER: {
     BLUE: 'https://s6.imgcdn.dev/YA7o4a.png',

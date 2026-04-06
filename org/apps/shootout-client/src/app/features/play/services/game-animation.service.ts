@@ -2,20 +2,9 @@ import { Injectable } from '@angular/core';
 import { IPoint } from '@org/shared-types';
 import { gsap } from 'gsap';
 
-/**
- * @export
- * @class GameAnimationService
- * @typedef {GameAnimationService}
- */
 @Injectable({ providedIn: 'root' })
 export class GameAnimationService {
-  /**
-   *@param {HTMLElement} ball 
-   * @param {Point[]} coords 
-   * @param {number} time 
-   * @param {?() => void} [onComplete] 
-   * @returns {void) => void} 
-   */
+
   animateBall(ball: HTMLElement, coords: IPoint[], time: number, onComplete?: () => void) {
     setTimeout(() => {
       gsap.to(ball, {
@@ -48,14 +37,6 @@ export class GameAnimationService {
     }, 2800);
   }
 
-  /**
-   *@param {HTMLElement} goalkie 
-   * @param {number} xDiff 
-   * @param {() => void} onStart 
-   * @param {(frame: number) => void} onUpdate 
-   * @param {() => void} onComplete 
-   * @returns {void, onUpdate: (frame: number) => void, onComplete: () => void) => void} 
-   */
   animateGoalkie(
     goalkie: HTMLElement,
     xDiff: number,
@@ -65,7 +46,6 @@ export class GameAnimationService {
   ) {
     const totalSize = 11040;
     const frames = 46;
-
     const tl = gsap.timeline();
 
     gsap.set(goalkie, {

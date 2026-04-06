@@ -19,17 +19,10 @@
   width: 130px;
   height: 200px;
   position: absolute;
-
   left: -150px;
   top: -50px;
-
   transform: translate(-50%, 0%);
-
   z-index: 50;
-
-  /* animation:
-    moveForward 2s linear alternate 0.5s ,
-    kick 2.5s steps(7) infinite; */
 }
 
 @keyframes kick {
@@ -57,7 +50,6 @@
   left: 6.9rem;
   bottom: -36px;
   transform: translate(0, 0%);
-  /* animation: dive 1.916s steps(46) infinite; */
 }
 
 @keyframes dive {

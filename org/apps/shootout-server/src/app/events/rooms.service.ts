@@ -2,11 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { IRoom } from '@org/shared-types';
 import { randomUUID } from 'crypto';
 
-/**
- * @export
- * @class RoomService
- * @typedef {RoomService}
- */
 @Injectable()
 export class RoomService {
   private rooms: IRoom[] = [];

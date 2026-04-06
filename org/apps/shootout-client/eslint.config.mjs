@@ -24,6 +24,7 @@ export default [
           style: 'kebab-case',
         },
       ],
+      "@angular-eslint/template/click-events-have-key-events": ["off"]
     },
   },
   {

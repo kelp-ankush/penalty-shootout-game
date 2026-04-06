@@ -40,17 +40,14 @@ export interface IShotEvent {
   game: IGame;
 }
 
-/** Goalie dive event */
 export interface IGoalieDiveEvent {
   destPos: IPoint;
 }
 
-/** Result update event */
 export interface IResultUpdateEvent {
   game: IGame;
 }
 
-/** Cached shot */
 export interface ICachedShot {
   userId: string;
   roomId: string;

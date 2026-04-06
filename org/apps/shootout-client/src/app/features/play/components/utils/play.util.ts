@@ -1,11 +1,6 @@
 import { IPoint } from "@org/shared-types";
 
-/**
- * @export
- * @param {IPoint} vertex
- * @param {IPoint} point2
- * @returns {IPoint[]}
- */
+
 export function calculateTrajectory(vertex: IPoint, point2: IPoint): IPoint[] {
   const coords: IPoint[] = [];
   const a: number = (point2.x - vertex.x) / Math.pow(point2.y - vertex.y, 2);
@@ -21,18 +16,6 @@ export function calculateTrajectory(vertex: IPoint, point2: IPoint): IPoint[] {
   }));
 }
 
-/**
- * @export
- * @param {DOMRect} r
- * @param {DOMRect} n
- * @param {{
- *     top: number;
- *     left: number;
- *     right: number;
- *     bottom: number;
- *   }} t
- * @returns {boolean}
- */
 export function checkGoal(
   r: DOMRect,
   n: DOMRect,
@@ -52,12 +35,6 @@ export function checkGoal(
   return intersectsNet && !intersectsGoalkie;
 }
 
-/**
- * @export
- * @param {IPoint} point
- * @param {DOMRect} rect
- * @returns {IPoint}
- */
 export function getContainerCoords(point: IPoint, rect: DOMRect) {
   return {
     x: point.x - rect.left,
@@ -65,12 +42,6 @@ export function getContainerCoords(point: IPoint, rect: DOMRect) {
   };
 }
 
-/**
- * @export
- * @param {IPoint} point
- * @param {DOMRect} rect
- * @returns {IPoint}
- */
 export function getViewPortCoords(point: IPoint, rect: DOMRect) {
   return {
     x: point.x + rect.left,
@@ -78,9 +49,6 @@ export function getViewPortCoords(point: IPoint, rect: DOMRect) {
   };
 }
 
-/**
- * @type {{}}
- */
 export const lefthitboxes = [
   ...Array.from({ length: 9 }, () => ({ x: 100, y: 20, width: 65, height: 160 })),
   ...Array.from({ length: 6 }, () => ({
@@ -98,9 +66,6 @@ export const lefthitboxes = [
   ...Array.from({ length: 21 }, () => ({ x: 20, y: 60, width: 180, height: 120 })),
 ];
 
-/**
- * @type {{}}
- */
 export const righthitboxes = [
   ...Array.from({ length: 9 }, () => ({
     x: 240 - (100 + 65),
@@ -131,9 +96,6 @@ export const righthitboxes = [
   })),
 ];
 
-/**
- * @type {{}}
- */
 export const jumphitboxes = [
   ...Array.from({ length: 10 }, () => ({
     x: 80,
@@ -185,10 +147,6 @@ export const jumphitboxes = [
   })),
 ];
 
-/**
- *@param {number} power
- * @returns {*}
- */
 export function calculateClampedTime(power: number) {
   const minPower = 0;
   const maxPower = 192;
