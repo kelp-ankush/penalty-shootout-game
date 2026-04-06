@@ -156,7 +156,7 @@
           <div>
             <h3 class="text-lg font-semibold mb-2 text-green-400">As a Striker:</h3>
             <ul class="space-y-3 text-sm">
-              @for (step of tutorialStepsForStriker; track $index) {
+              @for (step of strikerSteps; track $index) {
                 <li class="flex items-start gap-2">
                   <span class="text-green-400 font-bold">{{ $index + 1 }}.</span>
                   <span>{{ step }}</span>
@@ -167,7 +167,7 @@
           <div class="mt-5">
             <h3 class="text-lg font-semibold mb-2 text-green-400">As a Goalkeeper:</h3>
             <ul class="space-y-3 text-sm">
-              @for (step of tutorialStepsForGoalkeeper; track $index) {
+              @for (step of goalkieSteps; track $index) {
                 <li class="flex items-start gap-2">
                   <span class="text-green-400 font-bold">{{ $index + 1 }}.</span>
                   <span>{{ step }}</span>

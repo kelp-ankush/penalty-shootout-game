@@ -32,12 +32,12 @@ import { ICachedShot, IGame, IGoalieDiveEvent, IResultUpdateEvent, IShotEvent, I
 import { ASSETS } from '../../../core/utils/images.constants';
 import { SocketService } from '../../../core/services/socket.service';
 import { GameAnimationService } from '../services/game-animation.service';
+import { tutorialStepsForGoalkeeper, tutorialStepsForStriker } from './utils/play.constants';
 
 
 @Component({
   selector: 'app-play',
   templateUrl: './play.html',
-  styleUrls: ['./play.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [NgClass],
   standalone: true
@@ -105,17 +105,9 @@ export class Play implements OnInit, AfterViewInit {
 
   showTutorial = false;
 
-  tutorialStepsForStriker = [
-    'Drag the arrow downwards to aim your shot',
-    'Click "Lock Aim" to confirm direction',
-    'You’ll see a marker showing where your shot will go until the striker starts moving',
-    'Click on the power bar to set shot strength',
-  ];
+  strikerSteps = tutorialStepsForStriker
 
-  tutorialStepsForGoalkeeper = [
-    'Once the striker begins running, you can dive',
-    'Tap the goalpost area to dive in that direction',
-  ];
+  goalkieSteps = tutorialStepsForGoalkeeper
 
   intersectionFrame = 0;
 
