@@ -12,6 +12,7 @@ import { RoomService } from './rooms.service';
 import { MatchService } from './match.service';
 import { Logger } from '@nestjs/common';
 import { EventType, IGame, IGoalieDive, ILeaveRoom, IRoom, IShotComplete, IShotData, SubscriptionType } from '@org/shared'
+import { IEventResponse } from '../core/interfaces/event.interface';
 
 @WebSocketGateway({
   cors: {
@@ -60,7 +61,7 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage(SubscriptionType.CREATE_ROOM)
-  async handleCreateRoom(@ConnectedSocket() client: Socket): Promise<void> {
+  async handleCreateRoom(@ConnectedSocket() client: Socket): Promise<{event: SubscriptionType, data: IRoom}> {
     const userId = this.clientIdToUserIdMap.get(client.id) || "";
     const room = this.roomService.createRoom(userId);
 
@@ -68,10 +69,11 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     this.server.emit(SubscriptionType.ROOMS_UPDATE, this.roomService.getAvailableRooms());
 
+    return { event: SubscriptionType.ROOM_CREATED, data: room };
   }
 
   @SubscribeMessage(SubscriptionType.JOIN_ROOM)
-  async handleJoinRoom(@ConnectedSocket() client: Socket): Promise<void> {
+  async handleJoinRoom(@ConnectedSocket() client: Socket): Promise<IEventResponse> {
     const userId = this.clientIdToUserIdMap.get(client.id) || "";
     const room = this.roomService.joinRoom(userId);
 
@@ -84,14 +86,16 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.server.to(room.id).emit(SubscriptionType.ROOM_READY, room);
     this.server.emit(SubscriptionType.ROOMS_UPDATE, this.roomService.getAvailableRooms());
 
-    this.handleStartGame(room.id);
+    const game = this.handleStartGame(room.id);
+
+    return { event: SubscriptionType.JOINED_ROOM, data: room, game };
   }
 
   @SubscribeMessage(SubscriptionType.JOIN_SPECIFIC_ROOM)
   async handleJoinSpecificRoom(
     @ConnectedSocket() client: Socket,
     @MessageBody() roomId: string,
-  ): Promise<void>{
+  ): Promise<IEventResponse>{
     const userId = this.clientIdToUserIdMap.get(client.id) || '';
     const room = this.roomService.joinSpecificRoom(userId, roomId);
 
@@ -103,12 +107,13 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     this.server.to(room.id).emit(SubscriptionType.ROOM_READY, room);
 
-    this.handleStartGame(room.id);
+    const game = this.handleStartGame(room.id);
     this.server.emit(SubscriptionType.ROOMS_UPDATE, this.roomService.getAvailableRooms());
 
+    return { event: SubscriptionType.JOINED_ROOM, data: room, game };
   }
 
-  handleStartGame(roomId: string): void {
+  handleStartGame(roomId: string): IGame {
     const room = this.roomService.getRoomByRoomId(roomId);
     if (!room) {
       this.logger.fatal(`No room available with roomId: ${roomId}`)
@@ -117,6 +122,8 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const game = this.matchService.createGame(room.id, room.users);
 
     this.server.to(room.id).emit(SubscriptionType.INITITATED_GAME, game);
+
+    return game;
   }
 
   @SubscribeMessage(SubscriptionType.TAKE_SHOT)

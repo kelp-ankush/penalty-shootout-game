@@ -5,14 +5,13 @@ import {
   computed,
   effect,
   ElementRef,
-  EventEmitter,
   inject,
   input,
   OnInit,
-  Output,
+  output,
   Renderer2,
   signal,
-  ViewChild,
+  viewChild,
 } from '@angular/core';
 import { NgClass } from '@angular/common';
 import gsap from 'gsap';
@@ -87,12 +86,12 @@ export class Play implements OnInit, AfterViewInit {
   goalkieSteps = tutorialStepsForGoalkeeper
   intersectionFrame = 0;
   rp: DOMRect | null = null;
-  @Output() gameEnded = new EventEmitter<void>();
-  @ViewChild('ball') ballRef!: ElementRef;
-  @ViewChild('goalkie') goalkieRef!: ElementRef;
-  @ViewChild('player') playerRef!: ElementRef;
-  @ViewChild('nets') netsRef!: ElementRef;
-  @ViewChild('playground') playgroundRef!: ElementRef;
+  gameEnded = output<void>();
+  ballRef = viewChild<ElementRef>('ball');
+  goalkieRef = viewChild<ElementRef>('goalkie');
+  playerRef = viewChild<ElementRef>('player');
+  netsRef = viewChild<ElementRef>('nets');
+  playgroundRef = viewChild<ElementRef>('playground');
 
   private socketService = inject(SocketService);
   private gameAnimationService = inject(GameAnimationService)
@@ -160,7 +159,7 @@ export class Play implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    const playgroundRef = this.playgroundRef.nativeElement as HTMLElement;
+    const playgroundRef = this.playgroundRef()?.nativeElement as HTMLElement;
     if (playgroundRef) {
       const rect = playgroundRef.getBoundingClientRect();
       this.rp = rect;
@@ -193,7 +192,7 @@ export class Play implements OnInit, AfterViewInit {
     this.goalkieDivedClient = true;
   }
 
-  onMouseMove(e: MouseEvent | PointerEvent) {
+  onMouseMove = (e: MouseEvent | PointerEvent) => {
     if (!this.isDragging || this.winner() || !this.rp) return;
     const arrowElem = document.getElementById('arrow') as HTMLElement;
 
@@ -222,7 +221,7 @@ export class Play implements OnInit, AfterViewInit {
     }
   };
 
-  onMouseDown(e: MouseEvent) {
+  onMouseDown = (e: MouseEvent) => {
     if (this.winner()) return;
 
     e.preventDefault();
@@ -232,7 +231,7 @@ export class Play implements OnInit, AfterViewInit {
     document.addEventListener('mouseup', this.onMouseUp);
   }
 
-  onPointerDown(e: PointerEvent) {
+  onPointerDown = (e: PointerEvent) => {
     if (this.winner()) return;
 
     e.preventDefault();
@@ -242,7 +241,7 @@ export class Play implements OnInit, AfterViewInit {
     document.addEventListener('pointerup', this.onMouseUp);
   }
 
-  onMouseUp() {
+  onMouseUp = () => {
     if (this.winner()) return;
 
     this.isDragging = false;
@@ -259,7 +258,7 @@ export class Play implements OnInit, AfterViewInit {
       return;
     }
 
-    const nets = this.netsRef?.nativeElement as HTMLElement;
+    const nets = this.netsRef()?.nativeElement as HTMLElement;
     const netsRect = nets?.getClientRects()[0];
     const lockAim = document.getElementById('lock-aim') as HTMLElement;
 
@@ -328,9 +327,9 @@ export class Play implements OnInit, AfterViewInit {
   }
 
   resetPositions() {
-    const ball = this.ballRef?.nativeElement;
-    const goalkie = this.goalkieRef?.nativeElement;
-    const player = this.playerRef?.nativeElement;
+    const ball = this.ballRef()?.nativeElement;
+    const goalkie = this.goalkieRef()?.nativeElement;
+    const player = this.playerRef()?.nativeElement;
 
     if (!ball || !goalkie) return;
 
@@ -397,9 +396,9 @@ export class Play implements OnInit, AfterViewInit {
 
     this.ballPos.set(data.destPos);
 
-    const player = this.playerRef?.nativeElement;
+    const player = this.playerRef()?.nativeElement;
 
-    const ball = this.ballRef?.nativeElement;
+    const ball = this.ballRef()?.nativeElement;
     const marker = document.getElementById('marker');
 
     if (!ball || !player) return;
@@ -419,10 +418,9 @@ export class Play implements OnInit, AfterViewInit {
 
   handleCheckGoal() {
     this.ballAnimationDone.set(true);
-    const ball = this.ballRef?.nativeElement as HTMLElement;
-
-    const goalkie = this.goalkieRef?.nativeElement as HTMLElement;
-    const nets = this.netsRef?.nativeElement as HTMLElement;
+    const ball = this.ballRef()?.nativeElement as HTMLElement;
+    const goalkie = this.goalkieRef()?.nativeElement as HTMLElement;
+    const nets = this.netsRef()?.nativeElement as HTMLElement;
 
     let frame: IFrame | null = null;
     const frameNumber = this.Math.min(this.intersectionFrame, 45);
@@ -473,7 +471,7 @@ export class Play implements OnInit, AfterViewInit {
 
   handleGoalkieDive(data: IGoalieDiveEvent) {
     if (!this.shouldGoalkieDive || !this.rp) return;
-    const goalkie = this.goalkieRef?.nativeElement as HTMLElement;
+    const goalkie = this.goalkieRef()?.nativeElement as HTMLElement;
 
     this.shouldGoalkieDive = false;
 
@@ -542,8 +540,8 @@ export class Play implements OnInit, AfterViewInit {
 
   private initializeValues() {
     setTimeout(() => {
-      const ballRect = this.ballRef?.nativeElement?.getBoundingClientRect();
-      const goalkieRect = (this.goalkieRef?.nativeElement as HTMLElement)?.getBoundingClientRect();
+      const ballRect = this.ballRef()?.nativeElement?.getBoundingClientRect();
+      const goalkieRect = (this.goalkieRef()?.nativeElement as HTMLElement)?.getBoundingClientRect();
       const arrowRect = (document.getElementById('arrow') as HTMLElement)?.getBoundingClientRect();
 
       if (this.initialBallPos.x === 0)
