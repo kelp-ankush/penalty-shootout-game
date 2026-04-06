@@ -11,6 +11,7 @@ import { Server, Socket } from 'socket.io';
 import { RoomService } from './rooms.service';
 import { MatchService } from './match.service';
 import { Game } from '../core/interfaces/game.interface';
+import { Logger } from '@nestjs/common';
 
 @WebSocketGateway({
   cors: {
@@ -23,6 +24,7 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   server: Server;
 
   private clientIdToUserIdMap: Map<string, string> = new Map();
+  private readonly logger = new Logger(EventsGateway.name)
 
   constructor(
     private roomService: RoomService,
@@ -31,7 +33,7 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 
   handleConnection(client: Socket) {
-    console.log('client connected:', client.id, client.handshake.auth.userId);
+   this.logger.log(`client connected: ${client.id} with user-id: ${client.handshake.auth.userId}`);
     this.clientIdToUserIdMap.set(
       client.id,
       client.handshake.auth.userId,
@@ -40,7 +42,7 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   handleDisconnect(client: Socket) {
-    console.log('client disconnected:', client.id, client.handshake.auth.userId);
+   this.logger.log(`client disconnected: ${client.id} with user-id: ${client.handshake.auth.userId}`);
 
     const userId = this.clientIdToUserIdMap.get(client.id) || '';
     const roomIds = this.roomService.removeUserFromRooms(userId);
