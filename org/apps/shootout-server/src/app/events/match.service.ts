@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { Game } from '../core/interfaces/game.interface';
+import { IGame } from '@org/shared-types';
 
 @Injectable()
 export class MatchService {
 
-  private games: Game[] = [];
+  private games: IGame[] = [];
 
-  createGame(roomId: string, players: string[]): Game {
-    const game: Game = {
+  createGame(roomId: string, players: string[]): IGame {
+    const game: IGame = {
       roomId,
       players,
       turn: players[0],

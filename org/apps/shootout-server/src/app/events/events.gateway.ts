@@ -10,8 +10,8 @@ import {
 import { Server, Socket } from 'socket.io';
 import { RoomService } from './rooms.service';
 import { MatchService } from './match.service';
-import { Game } from '../core/interfaces/game.interface';
 import { Logger } from '@nestjs/common';
+import { EventType, IGame, IGoalieDive, ILeaveRoom, IShotComplete, IShotData, SubscriptionType } from '@org/shared-types'
 
 @WebSocketGateway({
   cors: {
@@ -38,7 +38,7 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
       client.id,
       client.handshake.auth.userId,
     );
-    this.server.emit('roomsUpdate', this.roomService.getAvailableRooms());
+    this.server.emit(SubscriptionType.ROOMS_UPDATE, this.roomService.getAvailableRooms());
   }
 
   handleDisconnect(client: Socket) {
@@ -48,30 +48,30 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const roomIds = this.roomService.removeUserFromRooms(userId);
 
     for (const roomId of roomIds) {
-      this.server.to(roomId).emit('roomUpdate', {
+      this.server.to(roomId).emit(SubscriptionType.ROOM_UPDATE, {
         event: 'user-left',
         msg: `Your opponent has left the room, start a fresh game!`,
         userId,
       });
     }
-    this.server.emit('roomsUpdate', this.roomService.getAvailableRooms());
+    this.server.emit(SubscriptionType.ROOMS_UPDATE, this.roomService.getAvailableRooms());
 
     this.clientIdToUserIdMap.delete(client.id);
   }
 
-  @SubscribeMessage('createRoom')
+  @SubscribeMessage(SubscriptionType.CREATE_ROOM)
   async handleCreateRoom(@ConnectedSocket() client: Socket) {
     const userId = this.clientIdToUserIdMap.get(client.id) || "";
     const room = this.roomService.createRoom(userId);
 
     await client.join(room.id);
 
-    this.server.emit('roomsUpdate', this.roomService.getAvailableRooms());
+    this.server.emit(SubscriptionType.ROOMS_UPDATE, this.roomService.getAvailableRooms());
 
-    return { event: 'roomCreated', data: room };
+    return { event: SubscriptionType.ROOM_CREATED, data: room };
   }
 
-  @SubscribeMessage('joinRoom')
+  @SubscribeMessage(SubscriptionType.JOIN_ROOM)
   async handleJoinRoom(@ConnectedSocket() client: Socket) {
     const userId = this.clientIdToUserIdMap.get(client.id) || "";
     const room = this.roomService.joinRoom(userId);
@@ -82,20 +82,20 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     await client.join(room.id);
 
-    this.server.to(room.id).emit('roomReady', room);
-    this.server.emit('roomsUpdate', this.roomService.getAvailableRooms());
+    this.server.to(room.id).emit(SubscriptionType.ROOM_READY, room);
+    this.server.emit(SubscriptionType.ROOMS_UPDATE, this.roomService.getAvailableRooms());
 
     const game = this.handleStartGame(room.id);
-    return { event: 'joinedRoom', data: room, game };
+    return { event: SubscriptionType.JOINED_ROOM, data: room, game };
   }
 
-  @SubscribeMessage('joinSpecificRoom')
+  @SubscribeMessage(SubscriptionType.JOIN_SPECIFIC_ROOM)
   async handleJoinSpecificRoom(
     @ConnectedSocket() client: Socket,
-    @MessageBody() data: { roomId: string },
+    @MessageBody() roomId: string,
   ) {
     const userId = this.clientIdToUserIdMap.get(client.id) || '';
-    const room = this.roomService.joinSpecificRoom(userId, data.roomId);
+    const room = this.roomService.joinSpecificRoom(userId, roomId);
 
     if (!room) {
       return { event: 'error', data: 'No available rooms' };
@@ -103,47 +103,37 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     await client.join(room.id);
 
-    this.server.to(room.id).emit('roomReady', room);
+    this.server.to(room.id).emit(SubscriptionType.ROOM_READY, room);
 
     const game = this.handleStartGame(room.id);
-    this.server.emit('roomsUpdate', this.roomService.getAvailableRooms());
+    this.server.emit(SubscriptionType.ROOMS_UPDATE, this.roomService.getAvailableRooms());
 
-    return { event: 'joinedRoom', data: room, game };
+    return { event: SubscriptionType.JOINED_ROOM, data: room, game };
   }
 
-  handleStartGame(roomId: string): Game {
+  handleStartGame(roomId: string): IGame {
     const room = this.roomService.getRoomByRoomId(roomId);
     if (!room) return;
 
     const game = this.matchService.createGame(room.id, room.users);
 
-    this.server.to(room.id).emit('initiatedGame', game);
+    this.server.to(room.id).emit(SubscriptionType.INITITATED_GAME, game);
     return game;
   }
 
-  @SubscribeMessage('takeShot')
-  handleTakeShotGame(@MessageBody() data: {
-    userId: string;
-    roomId: string;
-    power: string;
-    destPos: { x: string; y: string };
-  },
+  @SubscribeMessage(SubscriptionType.TAKE_SHOT)
+  handleTakeShotGame(@MessageBody() data: IShotData,
   ) {
     const game = this.matchService.getGame(data.roomId);
     if (!game || game.isFinished) return;
 
-    this.server.to(data.roomId).emit('shotInformation', { data, game });
+    this.server.to(data.roomId).emit(SubscriptionType.SHOT_INFORMATION, { data, game });
   }
 
-  @SubscribeMessage('shotComplete')
+  @SubscribeMessage(SubscriptionType.SHOT_COMPLETE)
   handleShotComplete(
     @MessageBody()
-    data: {
-      userId: string;
-      roomId: string;
-      isGoal: boolean;
-      turn: string;
-    },
+    data: IShotComplete,
   ) {
     const room = this.roomService.getRoomByRoomId(data.roomId);
     if (!room) return;
@@ -151,46 +141,38 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const updatedGame = this.matchService.updateScore(data);
     if (!updatedGame) return;
 
-    this.server.to(data.roomId).emit('resultUpdated', { game: updatedGame });
+    this.server.to(data.roomId).emit(SubscriptionType.RESULT_UPDATED, { game: updatedGame });
   }
 
   @SubscribeMessage('goalkieDive')
   handleGoalkieDive(
     @MessageBody()
-    data: {
-      userId: string;
-      roomId: string;
-      destPos: { x: string; y: string };
-    },
+    data: IGoalieDive,
   ) {
-    this.server.to(data.roomId).emit('goalkieDive', data);
+    this.server.to(data.roomId).emit(SubscriptionType.GOALKIE_DIVE, data);
   }
 
   @SubscribeMessage('leaveRoom')
   handleLeaveRoom(
     @ConnectedSocket() client: Socket,
     @MessageBody()
-    data: {
-      userId: string;
-      roomId: string;
-      eventType: string;
-    },
+    data: ILeaveRoom,
   ) {
-    if (data.eventType === 'user-left') {
+    if (data.eventType === EventType.USER_LEFT) {
       const roomIds = this.roomService.removeUserFromRooms(
         this.clientIdToUserIdMap.get(client.id) || '',
       );
 
       for (const roomId of roomIds) {
         const res = {
-          event: 'user-left',
+          event: EventType.USER_LEFT,
           msg: `Your opponent has left the room due to resize-window, start a fresh game!`,
           userId: data.userId,
         };
 
-        this.server.to(roomId).emit('roomUpdate', res);
+        this.server.to(roomId).emit(SubscriptionType.ROOM_UPDATE, res);
       }
-      this.server.emit('roomsUpdate', this.roomService.getAvailableRooms());
+      this.server.emit(SubscriptionType.ROOMS_UPDATE, this.roomService.getAvailableRooms());
     } else {
       const room = this.roomService.getRoomByRoomId(data.roomId);
       if (!room) return;
@@ -198,7 +180,7 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
       this.roomService.leaveRoom(data.userId, data.roomId);
       this.server
         .to(data.roomId)
-        .emit('roomsUpdate', this.roomService.getAvailableRooms());
+        .emit(SubscriptionType.ROOMS_UPDATE, this.roomService.getAvailableRooms());
     }
   }
 }

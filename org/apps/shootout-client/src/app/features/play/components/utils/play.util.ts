@@ -1,17 +1,17 @@
-import { Point } from "../models/play.model";
+import { IPoint } from "@org/shared-types";
 
 /**
  * @export
- * @param {Point} vertex
- * @param {Point} point2
- * @returns {Point[]}
+ * @param {IPoint} vertex
+ * @param {IPoint} point2
+ * @returns {IPoint[]}
  */
-export function calculateTrajectory(vertex: Point, point2: Point): Point[] {
-  let coords = [];
-  let a = (point2.x - vertex.x) / Math.pow(point2.y - vertex.y, 2);
+export function calculateTrajectory(vertex: IPoint, point2: IPoint): IPoint[] {
+  const coords: IPoint[] = [];
+  const a: number = (point2.x - vertex.x) / Math.pow(point2.y - vertex.y, 2);
 
   for (let y = point2.y; y <= vertex.y; y++) {
-    let x = a * Math.pow(y - vertex.y, 2) + vertex.x;
+    const x = a * Math.pow(y - vertex.y, 2) + vertex.x;
     coords.push({ x, y });
   }
 
@@ -54,11 +54,11 @@ export function checkGoal(
 
 /**
  * @export
- * @param {{x: number, y: number}} point
+ * @param {IPoint} point
  * @param {DOMRect} rect
- * @returns {{ x: number; y: number; }}
+ * @returns {IPoint}
  */
-export function getContainerCoords(point: { x: number; y: number }, rect: DOMRect) {
+export function getContainerCoords(point: IPoint, rect: DOMRect) {
   return {
     x: point.x - rect.left,
     y: point.y - rect.top,
@@ -67,11 +67,11 @@ export function getContainerCoords(point: { x: number; y: number }, rect: DOMRec
 
 /**
  * @export
- * @param {{x: number, y: number}} point
+ * @param {IPoint} point
  * @param {DOMRect} rect
- * @returns {{ x: any; y: any; }}
+ * @returns {IPoint}
  */
-export function getViewPortCoords(point: { x: number; y: number }, rect: DOMRect) {
+export function getViewPortCoords(point: IPoint, rect: DOMRect) {
   return {
     x: point.x + rect.left,
     y: point.y + rect.top,

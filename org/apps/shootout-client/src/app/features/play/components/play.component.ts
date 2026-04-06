@@ -6,6 +6,7 @@ import {
   effect,
   ElementRef,
   EventEmitter,
+  inject,
   input,
   OnInit,
   Output,
@@ -27,8 +28,7 @@ import {
   righthitboxes,
 } from './utils/play.util';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { ICachedShot, IGoalieDiveEvent, IResultUpdateEvent, IShotEvent } from './models/play.model';
-import { IGame } from '../../../core/models/common.model';
+import { ICachedShot, IGame, IGoalieDiveEvent, IResultUpdateEvent, IShotEvent, IPoint } from '@org/shared-types';
 import { ASSETS } from '../../../core/utils/images.constants';
 import { SocketService } from '../../../core/services/socket.service';
 import { GameAnimationService } from '../services/game-animation.service';
@@ -70,13 +70,13 @@ export class Play implements OnInit, AfterViewInit {
 
   maxRounds = 5;
 
-  ballPos = signal<{ x: number; y: number }>({ x: 0, y: 0 });
-  initialBallPos: { x: number; y: number } = { x: 0, y: 0 };
+  ballPos = signal<IPoint>({ x: 0, y: 0 });
+  initialBallPos: IPoint = { x: 0, y: 0 };
 
-  goalkiePos = signal<{ x: number; y: number }>({ x: 0, y: 0 });
-  initialGoalkiePos: { x: number; y: number } = { x: 0, y: 0 };
+  goalkiePos = signal<IPoint>({ x: 0, y: 0 });
+  initialGoalkiePos: IPoint = { x: 0, y: 0 };
 
-  initialArrowPos: { x: number; y: number } = { x: 0, y: 0 };
+  initialArrowPos: IPoint = { x: 0, y: 0 };
 
   myScore = signal(0);
   opponentScore = signal(0);
@@ -138,6 +138,10 @@ export class Play implements OnInit, AfterViewInit {
 
   @ViewChild('playground') playgroundRef!: ElementRef;
 
+  private socketService = inject(SocketService);
+  private gameAnimationService = inject(GameAnimationService)
+  private renderer = inject(Renderer2)
+
   /** * Creates an instance of Play.
    *
    * @constructor
@@ -146,9 +150,6 @@ export class Play implements OnInit, AfterViewInit {
    * @param {GameAnimationService} gameAnimationService
    */
   constructor(
-    private socketService: SocketService,
-    private renderer: Renderer2,
-    private gameAnimationService: GameAnimationService,
   ) {
     gsap.registerPlugin(MotionPathPlugin);
     gsap.registerPlugin(ScrollTrigger);
@@ -221,7 +222,7 @@ export class Play implements OnInit, AfterViewInit {
    *@param {MouseEvent} event
    */
   onGoalkieChooseDirection(event: MouseEvent) {
-    if (this.winner()) return;
+    if (this.winner() || !this.rp) return;
     if (
       !this.shouldGoalkieDive ||
       this.goalkieDivedClient ||
@@ -232,7 +233,7 @@ export class Play implements OnInit, AfterViewInit {
 
     const containerPos = getContainerCoords(
       { x: event.clientX - 40, y: event.clientY - 80 },
-      this.rp!,
+      this.rp,
     );
 
     this.goalkiePos.set({ x: containerPos.x, y: containerPos.y });
@@ -250,7 +251,7 @@ export class Play implements OnInit, AfterViewInit {
    *@param {(MouseEvent | PointerEvent)} e
    */
   onMouseMove = (e: MouseEvent | PointerEvent) => {
-    if (!this.isDragging || this.winner()) return;
+    if (!this.isDragging || this.winner() || !this.rp) return;
     const arrowElem = document.getElementById('arrow') as HTMLElement;
 
     if (arrowElem) {
@@ -264,7 +265,7 @@ export class Play implements OnInit, AfterViewInit {
 
         const radians = Math.atan2(this.initialArrowPos.y - e.y, this.initialArrowPos.x - e.x);
 
-        let degrees = radians * (180 / Math.PI);
+        const degrees = radians * (180 / Math.PI);
 
         arrowElem.style.height = this.Math.max(132, this.Math.abs(YDiff) * 1.5) + 'px';
         arrowElem.style.transformOrigin = 'bottom';
@@ -274,7 +275,7 @@ export class Play implements OnInit, AfterViewInit {
         this.ballPos.set(
           getContainerCoords(
             { x: calcX - 10, y: arrowElem?.getBoundingClientRect().top - 20 },
-            this.rp!,
+            this.rp,
           ),
         );
       }
@@ -295,9 +296,9 @@ export class Play implements OnInit, AfterViewInit {
   }
 
   /**
-   *@param {PointerEvent} e
+   *@param {IPointerEvent} e
    */
-  onPointerDown(e: PointerEvent) {
+  onIPointerDown(e: PointerEvent) {
     if (this.winner()) return;
 
     e.preventDefault();
@@ -317,7 +318,7 @@ export class Play implements OnInit, AfterViewInit {
   };
 
   onLockDirection() {
-    if (this.winner()) return;
+    if (this.winner() || !this.rp) return;
 
     if (this.ballPos().x === 0 && this.ballPos().y === 0) {
       alert('Use arrow to select where to shoot');
@@ -328,9 +329,9 @@ export class Play implements OnInit, AfterViewInit {
     const netsRect = nets?.getClientRects()[0];
     const lockAim = document.getElementById('lock-aim') as HTMLElement;
 
-    if (nets && netsRect) {
+    if (nets && netsRect ) {
       const circle = document.createElement('div');
-      const ballPosView = getViewPortCoords(this.ballPos(), this.rp!);
+      const ballPosView = getViewPortCoords(this.ballPos(), this.rp);
 
       const left = ballPosView.x - netsRect.left;
       const top = ballPosView.y - netsRect.top + 16;
@@ -351,7 +352,8 @@ export class Play implements OnInit, AfterViewInit {
   }
 
   onLockPower() {
-    if (this.winner() || this.powerChosen) return;
+    if (this.winner() || this.powerChosen || !this.rp) return;
+
 
     const indicator = document.getElementById('indicator') as HTMLElement;
     const marker = document.getElementById('marker');
@@ -375,14 +377,14 @@ export class Play implements OnInit, AfterViewInit {
       indicator.style.left = (left - powerRect.left).toString() + 'px';
 
       this.shotTaken.set(true);
-      console.log(this.game)
       if (this.game && this.userId() === this.game.turn) {
+        const rp = this.rp;
         setTimeout(() => {
           this.socketService.shootBall({
             userId: this.userId(),
             roomId: this.roomId(),
             power,
-            destPos: getContainerCoords({ x: markerRect.x, y: markerRect.y }, this.rp!),
+            destPos: getContainerCoords({ x: markerRect.x, y: markerRect.y }, rp),
           });
           indicator.style.left = (-2).toString() + 'px';
           indicator.style.top = (-12).toString() + 'px';
@@ -457,6 +459,7 @@ export class Play implements OnInit, AfterViewInit {
    *@param {*} res
    */
   handleTakeShot(res: IShotEvent) {
+    if(!this.rp) return;
     const { data, game } = res;
 
     this.shouldGoalkieDive = true;
@@ -474,14 +477,13 @@ export class Play implements OnInit, AfterViewInit {
     if (!ball || !player) return;
 
     const vertex = this.initialBallPos;
-    const point2 = getViewPortCoords(data.destPos, this.rp!);
+    const point2 = getViewPortCoords(data.destPos, this.rp);
 
-    let coords: { x: number; y: number }[] = calculateTrajectory(vertex, point2);
+    const coords: IPoint[] = calculateTrajectory(vertex, point2);
 
-    this.animatePlayer(player!);
+    this.animatePlayer(player);
     this.gameAnimationService.animateBall(ball, coords, time, this.handleCheckGoal.bind(this));
 
-    //remove marker
     if (marker) {
       marker.remove();
     }
@@ -552,23 +554,20 @@ export class Play implements OnInit, AfterViewInit {
   /**
    *@param {*} data
    */
-  handleGoalkieDive(data: any) {
-    if (!this.shouldGoalkieDive) return;
+  handleGoalkieDive(data: IGoalieDiveEvent) {
+    if (!this.shouldGoalkieDive || !this.rp) return;
     const goalkie = this.goalkieRef?.nativeElement as HTMLElement;
 
     this.shouldGoalkieDive = false;
 
     const rect = goalkie.getBoundingClientRect();
     const startX = rect.x;
-    const startY = rect.y;
 
-    const destPosLocal = getViewPortCoords(data.destPos, this.rp!);
+    const destPosLocal = getViewPortCoords(data.destPos, this.rp);
 
     const endX = destPosLocal.x;
-    const endY = destPosLocal.y;
 
     let xDiff = endX - startX;
-    let yDiff = endY - startY;
 
     if (xDiff < 0) {
       xDiff -= 40;
@@ -609,7 +608,7 @@ export class Play implements OnInit, AfterViewInit {
       this.playerImage.set(ASSETS.PLAYER.RED);
     }
 
-    for (let userId of data.game.players) {
+    for (const userId of data.game.players) {
       if (userId === this.userId()) {
         this.myScore.set(data.game.score[userId] as number);
         this.myShots.set(data.game.shots[userId]);
@@ -654,12 +653,12 @@ export class Play implements OnInit, AfterViewInit {
 
   private playGoalSound() {
     this.goalAudio.currentTime = 0;
-    this.goalAudio.play().catch(() => {});
+    this.goalAudio.play()
   }
 
   private playSaveSound() {
     this.saveAudio.currentTime = 0;
-    this.saveAudio.play().catch(() => {});
+    this.saveAudio.play()
   }
 
   /**

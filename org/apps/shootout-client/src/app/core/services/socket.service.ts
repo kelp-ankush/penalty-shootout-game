@@ -2,15 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Socket, io } from 'socket.io-client';
 import { environment } from '../../../environments/environment';
-import {
-  IGoalieDive,
-  IRoomUpdateEvent,
-  IShotComplete,
-  IShotData,
-  IShotResult,
-} from '../models/socket.model';
-import { IGame, IRoom } from '../models/common.model';
-import { IShotEvent } from '../../features/play/components/models/play.model';
+import { IGame, IGoalieDive, IResultUpdateEvent, IRoom, IRoomUpdateEvent, IShotComplete, IShotData, IShotEvent, SubscriptionType } from '@org/shared-types';
 
 /**
  * Handles all socket communication
@@ -76,42 +68,37 @@ export class SocketService {
 
   /** Creates a new room */
   createRoom(): void {
-    this.emit('createRoom');
+    this.emit(SubscriptionType.CREATE_ROOM);
   }
 
   /** Joins a random room */
   joinRoom(): void {
-    this.emit('joinRoom');
+    this.emit(SubscriptionType.JOIN_ROOM);
   }
 
   /** Joins a specific room */
   joinSpecificRoom(roomId: string): void {
-    this.emit('joinSpecificRoom', { roomId });
-  }
-
-  /** Starts game */
-  startGame(roomId: string): void {
-    this.emit<string>('startGame', roomId);
+    this.emit(SubscriptionType.JOIN_SPECIFIC_ROOM, roomId);
   }
 
   /** Sends shot event */
   shootBall(data: IShotData): void {
-    this.emit<IShotData>('takeShot', data);
+    this.emit<IShotData>(SubscriptionType.TAKE_SHOT, data);
   }
 
   /** Sends shot completion */
   shotComplete(data: IShotComplete): void {
-    this.emit<IShotComplete>('shotComplete', data);
+    this.emit<IShotComplete>(SubscriptionType.SHOT_COMPLETE, data);
   }
 
   /** Sends goalie dive */
   goalkieDive(data: IGoalieDive): void {
-    this.emit<IGoalieDive>('goalkieDive', data);
+    this.emit<IGoalieDive>(SubscriptionType.GOALKIE_DIVE, data);
   }
 
   /** Leaves room */
   leaveRoom(roomId: string, eventType: string): void {
-    this.emit('leaveRoom', {
+    this.emit(SubscriptionType.LEAVE_ROOM, {
       roomId,
       eventType,
     });
@@ -119,41 +106,41 @@ export class SocketService {
 
   /** Room list updates */
   onRoomsUpdate(): Observable<IRoom[]> {
-    return this.listen<IRoom[]>('roomsUpdate');
+    return this.listen<IRoom[]>(SubscriptionType.ROOMS_UPDATE);
   }
 
   /** Room updates */
   onRoomUpdate(): Observable<IRoomUpdateEvent> {
-    return this.listen<IRoomUpdateEvent>('roomUpdate');
+    return this.listen<IRoomUpdateEvent>(SubscriptionType.ROOM_UPDATE);
   }
 
   /** Room ready */
   onRoomReady(): Observable<IRoom> {
-    return this.listen<IRoom>('roomReady');
+    return this.listen<IRoom>(SubscriptionType.ROOM_READY);
   }
 
   /** Room created */
   onRoomCreated(): Observable<IRoom> {
-    return this.listen<IRoom>('roomCreated');
+    return this.listen<IRoom>(SubscriptionType.ROOM_CREATED);
   }
 
   /** Game start */
   onGameStart(): Observable<IGame> {
-    return this.listen('initiatedGame');
+    return this.listen(SubscriptionType.INITITATED_GAME);
   }
 
   /** Shot info */
   onTakeShot(): Observable<IShotEvent> {
-    return this.listen<IShotEvent>('shotInformation');
+    return this.listen<IShotEvent>(SubscriptionType.SHOT_INFORMATION);
   }
 
   /** Result update */
-  onResultUpdate(): Observable<IShotResult> {
-    return this.listen<IShotResult>('resultUpdated');
+  onResultUpdate(): Observable<IResultUpdateEvent> {
+    return this.listen<IResultUpdateEvent>(SubscriptionType.RESULT_UPDATED);
   }
 
   /** Goalie dive event */
   onGoalkieDive(): Observable<IGoalieDive> {
-    return this.listen<IGoalieDive>('goalkieDive');
+    return this.listen<IGoalieDive>(SubscriptionType.GOALKIE_DIVE);
   }
 }

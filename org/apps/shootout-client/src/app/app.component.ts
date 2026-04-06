@@ -7,12 +7,12 @@ import {
   signal,
 } from '@angular/core';
 import { debounceTime, delay, of, Subject, switchMap, takeUntil } from 'rxjs';
-import { IRoom } from './core/models/common.model';
 import { ASSETS } from './core/utils/images.constants';
 import { Play } from './features/play/components/play.component';
 import { SocketService } from './core/services/socket.service';
 import { ImagePreloadService } from './core/services/image-preload.service';
 import { inject } from '@angular/core';
+import { EventType, IRoom, IRoomUpdateEvent } from "@org/shared-types"
 
 /**
  * Root component handling room lifecycle and socket events
@@ -81,7 +81,7 @@ export class AppComponent implements OnInit, OnDestroy {
   @HostListener('window:resize')
   onResize(): void {
     if (this.currentRoom()) {
-      this.leaveRoom('user-left');
+      this.leaveRoom(EventType.USER_LEFT);
     }
   }
 
@@ -149,8 +149,8 @@ export class AppComponent implements OnInit, OnDestroy {
     this.socketService
       .onRoomUpdate()
       .pipe(takeUntil(this.destroy$))
-      .subscribe((data: { event: string; userId: string; msg: string }) => {
-        if (data.event === 'user-left') {
+      .subscribe((data: IRoomUpdateEvent) => {
+        if (data.event === EventType.USER_LEFT) {
           this.handleUserLeftEvent(data);
         }
       });
@@ -178,11 +178,7 @@ export class AppComponent implements OnInit, OnDestroy {
    * Handles user-left socket event
    * @param data Event payload
    */
-  private handleUserLeftEvent(data: {
-    event: string;
-    userId: string;
-    msg: string;
-  }): void {
+  private handleUserLeftEvent(data: IRoomUpdateEvent): void {
     this.currentRoom.set(null);
     window.localStorage.removeItem('current-room');
 

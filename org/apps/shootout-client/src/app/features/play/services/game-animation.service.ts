@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { IPoint } from '@org/shared-types';
 import { gsap } from 'gsap';
 
 /**
@@ -15,7 +16,7 @@ export class GameAnimationService {
    * @param {?() => void} [onComplete] 
    * @returns {void) => void} 
    */
-  animateBall(ball: HTMLElement, coords: any[], time: number, onComplete?: () => void) {
+  animateBall(ball: HTMLElement, coords: IPoint[], time: number, onComplete?: () => void) {
     setTimeout(() => {
       gsap.to(ball, {
         duration: time,
@@ -91,10 +92,10 @@ export class GameAnimationService {
         duration: 1.5,
         ease: `steps(${frames})`,
         onStart: () => {
-          onStart ? onStart() : null;
+          onStart?.();
         },
         onComplete: () => {
-          onComplete ? onComplete() : null;
+          onComplete?.() 
         },
       },
       0,

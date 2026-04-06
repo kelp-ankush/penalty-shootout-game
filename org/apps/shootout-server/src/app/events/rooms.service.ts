@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
+import { IRoom } from '@org/shared-types';
 import { randomUUID } from 'crypto';
-import { IRoom } from '../core/interfaces/room.interface';
 
 /**
  * @export
