@@ -28,8 +28,7 @@ export class AppComponent implements OnInit, OnDestroy {
   userLeft = signal<string>('');
   socketService = inject(SocketService);
   imagePreloadService = inject(ImagePreloadService);
-  
-  private readonly userLeft$ = new Subject<string>();
+
   private readonly destroy$ = new Subject<void>();
 
   constructor() {
@@ -37,7 +36,6 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.handleUserLeftMessage();
     this.preloadAssets();
     this.listenToSocketEvents();
   }
@@ -45,7 +43,6 @@ export class AppComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
-    this.userLeft$.complete();
   }
 
   @HostListener('window:resize')
@@ -66,19 +63,6 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     return localUserId;
-  }
-
-  private handleUserLeftMessage(): void {
-    this.userLeft$
-      .pipe(
-        debounceTime(300),
-        switchMap((msg: string) => {
-          this.userLeft.set(msg);
-          return of(null).pipe(delay(2000));
-        }),
-        takeUntil(this.destroy$),
-      )
-      .subscribe(() => this.userLeft.set(''));
   }
 
   private preloadAssets(): void {
@@ -140,7 +124,11 @@ export class AppComponent implements OnInit, OnDestroy {
         ? data.msg
         : 'You resized the window, which is strictly not allowed! Start a fresh game.';
 
-    this.userLeft$.next(message);
+    this.userLeft.set(message)
+
+    setTimeout(() => {
+      this.userLeft.set("")
+    }, 2000)
   }
 
   createRoom(): void {
@@ -163,7 +151,7 @@ export class AppComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.socketService.leaveRoom({roomId: room.id, eventType});
+    this.socketService.leaveRoom({ roomId: room.id, eventType });
     this.rooms.set(this.rooms().filter((r) => r.id !== room.id));
   }
 }
