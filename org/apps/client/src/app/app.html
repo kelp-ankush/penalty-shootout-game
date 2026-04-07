@@ -1,73 +1,26 @@
 <div
-  class="
-    min-h-screen
-    bg-linear-to-br
-    from-green-900
-    via-black
-    to-green-800
-    flex
-    items-center
-    justify-center
-    text-white
-  "
+  class="min-h-screen bg-linear-to-br from-green-900 via-black to-green-800 flex items-center justify-center text-white"
 >
   @if (!currentRoom()) {
-  <div
-    class="
-      w-full
-      max-w-md
-      bg-black/60
-      backdrop-blur-md
-      rounded-2xl
-      shadow-xl
-      p-6
-      border border-white/10
-    "
-  >
+  <div class="w-full max-w-md bg-black/60 backdrop-blur-md rounded-2xl shadow-xl p-6 border border-white/10">
     <h1 class="text-3xl font-bold text-center mb-2">⚽ Penalty Shootout 🎮</h1>
     <p class="text-center text-gray-300 mb-6">Player ID: {{ userId }}</p>
 
     @if (userLeft()) {
-    <div
-      class="
-        border border-red-600
-        text-red-600 text-center text-sm
-        py-2
-        rounded-md
-        mb-4
-        animate-pulse
-      "
-    >
+    <div class="border border-red-600 text-red-600 text-center text-sm py-2 rounded-md mb-4 animate-pulse">
       {{ userLeft() }}
     </div>
     } @else {
     <div class="flex flex-col gap-3 mb-6">
       <button
-        class="
-          w-full
-          py-3
-          rounded-lg
-          bg-green-500
-          hover:bg-green-600
-          transition
-          font-semibold
-        "
+        class="w-full py-3 rounded-lg bg-green-500 hover:bg-green-600 transition font-semibold"
         (click)="createRoom()"
       >
         Create Room
       </button>
 
       <button
-        class="
-          w-full
-          py-3
-          rounded-lg
-          bg-white
-          text-black
-          hover:bg-gray-200
-          transition
-          font-semibold
-        "
+        class="w-full py-3 rounded-lg bg-white text-black hover:bg-gray-200 transition font-semibold"
         (click)="joinRoom()"
       >
         Join Room
@@ -107,9 +60,7 @@
             bg-blue-500
             hover:bg-blue-600
             transition
-            disabled:cursor-not-allowed
-            disabled:bg-gray-400
-            disabled:text-gray-700
+            disabled:cursor-not-allowed disabled:bg-gray-400 disabled:text-gray-700
           "
           (click)="joinSpecificRoom(room.id)"
           [disabled]="room.users.length === 2"
@@ -123,11 +74,7 @@
   </div>
   } @else {
   <div class="flex items-center justify-center">
-    <app-play
-      [userId]="userId"
-      [roomId]="currentRoom()?.id ?? ''"
-      (gameEnded)="leaveRoom($event)"
-    ></app-play>
+    <app-play [userId]="userId" [roomId]="currentRoom()?.id ?? ''" (gameEnded)="leaveRoom($event)"></app-play>
   </div>
   }
 </div>

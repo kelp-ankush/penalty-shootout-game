@@ -20,9 +20,7 @@
       to-green-800
     "
   >
-    <h4 class="tracking-wide">
-      Room : <span class="font-mono">{{ roomId() }}</span>
-    </h4>
+    <h4 class="tracking-wide">Room : <span class="font-mono">{{ roomId() }}</span></h4>
     <h5 class="font-semibold">Round: {{ Math.ceil(round() / 2) }} / 5</h5>
   </div>
   @if (winner()) {
@@ -43,17 +41,11 @@
     "
   >
     @if (winner() === userId()) {
-    <span class="text-green-400 text-lg font-bold tracking-wide animate-pulse"
-      >🏆 You Win!</span
-    >
+    <span class="text-green-400 text-lg font-bold tracking-wide animate-pulse">🏆 You Win!</span>
     } @else if (winner() === 'draw') {
-    <span class="text-yellow-300 text-lg font-bold tracking-wide animate-pulse"
-      >🤝 Draw</span
-    >
+    <span class="text-yellow-300 text-lg font-bold tracking-wide animate-pulse">🤝 Draw</span>
     } @else {
-    <span class="text-white text-lg font-bold tracking-wide animate-pulse"
-      >😔 You Lose</span
-    >
+    <span class="text-white text-lg font-bold tracking-wide animate-pulse">😔 You Lose</span>
     }
   </div>
   }
@@ -63,23 +55,8 @@
     [style.background]="'url(' + audienceImage + ') no-repeat bottom/cover'"
   >
     <div></div>
-    <div
-      class="
-        h-48
-        w-120
-        mx-auto
-        relative
-        col-span-4
-        rounded-lg
-        overflow-visible
-        cursor-pointer
-      "
-    >
-      <img
-        [src]="netsImage"
-        class="h-48 w-120 mx-auto relative brightness-90 contrast-110"
-        alt="nets"
-      />
+    <div class="h-48 w-120 mx-auto relative col-span-4 rounded-lg overflow-visible cursor-pointer">
+      <img [src]="netsImage" class="h-48 w-120 mx-auto relative brightness-90 contrast-110" alt="nets" />
       <button
         class="h-52 w-116 left-2 absolute top-2"
         #nets
@@ -122,23 +99,12 @@
   </div>
 
   <div
-    class="
-      relative
-      w-full
-      flex flex-col
-      items-center
-      justify-start
-      h-[calc(760px-254.5px)]
-    "
+    class="relative w-full flex flex-col items-center justify-start h-[calc(760px-254.5px)]"
     [style.background]="'url(' + fieldImage + ') no-repeat center / cover'"
   >
-    <div
-      class="h-0 border-b border bottom-0 w-full border-[#d8e2e6] left-1 z-0"
-    ></div>
+    <div class="h-0 border-b border bottom-0 w-full border-[#d8e2e6] left-1 z-0"></div>
 
-    <div
-      class="h-30 border-2 w-3/4 border-t-0 border-[#d8e2e6] z-0 relative"
-    ></div>
+    <div class="h-30 border-2 w-3/4 border-t-0 border-[#d8e2e6] z-0 relative"></div>
     <div class="flex items-center justify-center gap-60 mt-2">
       <button
         [ngClass]="[
@@ -161,10 +127,7 @@
         id="power-container"
         (click)="onLockPower()"
       >
-        <div
-          class="relative h-12 -top-3 -left-0.5 bg-white w-0.5 mt-2 shadow"
-          id="indicator"
-        ></div>
+        <div class="relative h-12 -top-3 -left-0.5 bg-white w-0.5 mt-2 shadow" id="indicator"></div>
       </div>
     </div>
 
@@ -198,9 +161,7 @@
         <span class="text-xs text-center"> Your Score</span>
         <div class="flex gap-2 items-center">
           @for (s of myShots(); track $index) {
-          <div class="text-xs">
-            {{ s === 1 ? '⚽' : s === 0 ? '❌' : '⚪' }}
-          </div>
+          <div class="text-xs">{{ s === 1 ? '⚽' : s === 0 ? '❌' : '⚪' }}</div>
           }
         </div>
       </div>
@@ -208,9 +169,7 @@
         <span class="text-xs"> Opponent's Score</span>
         <div class="flex gap-2 items-center">
           @for (s of opponentShots(); track $index) {
-          <div class="text-xs">
-            {{ s === 1 ? '⚽' : s === 0 ? '❌' : '⚪' }}
-          </div>
+          <div class="text-xs">{{ s === 1 ? '⚽' : s === 0 ? '❌' : '⚪' }}</div>
           }
         </div>
       </div>
@@ -239,18 +198,7 @@
   </button>
 
   @if (showTutorial) {
-  <div
-    class="
-      fixed
-      inset-0
-      z-2000
-      flex
-      items-center
-      justify-center
-      bg-black/70
-      backdrop-blur-sm
-    "
-  >
+  <div class="fixed inset-0 z-2000 flex items-center justify-center bg-black/70 backdrop-blur-sm">
     <div
       class="
         bg-linear-to-br
@@ -266,16 +214,11 @@
         relative
       "
     >
-      <button
-        class="absolute top-2 right-3 text-xl hover:scale-110 cursor-pointer"
-        (click)="showTutorial = false"
-      >
+      <button class="absolute top-2 right-3 text-xl hover:scale-110 cursor-pointer" (click)="showTutorial = false">
         ✖
       </button>
 
-      <h2 class="text-xl font-bold mb-4 text-center tracking-wide">
-        ⚽ How to Play
-      </h2>
+      <h2 class="text-xl font-bold mb-4 text-center tracking-wide">⚽ How to Play</h2>
       <div>
         <h3 class="text-lg font-semibold mb-2 text-green-400">As a Striker:</h3>
         <ul class="space-y-3 text-sm">
@@ -288,9 +231,7 @@
         </ul>
       </div>
       <div class="mt-5">
-        <h3 class="text-lg font-semibold mb-2 text-green-400">
-          As a Goalkeeper:
-        </h3>
+        <h3 class="text-lg font-semibold mb-2 text-green-400">As a Goalkeeper:</h3>
         <ul class="space-y-3 text-sm">
           @for (step of goalkieSteps; track $index) {
           <li class="flex items-start gap-2">
@@ -302,25 +243,13 @@
       </div>
 
       <p class="text-xs mt-5 text-gray-400">
-        1. Don't <span class="text-red-500 text-sm">RESIZE</span> the window or
-        your game will end!
+        1. Don't <span class="text-red-500 text-sm">RESIZE</span> the window or your game will end!
       </p>
-      <p class="text-xs mt-1 text-gray-400">
-        2. Click the help button in the bottom-right corner to reopen tutorial.
-      </p>
+      <p class="text-xs mt-1 text-gray-400">2. Click the help button in the bottom-right corner to reopen tutorial.</p>
 
       <div class="mt-5 flex justify-center">
         <button
-          class="
-            px-4
-            py-2
-            bg-green-600
-            hover:bg-green-500
-            rounded-md
-            font-semibold
-            transition
-            cursor-pointer
-          "
+          class="px-4 py-2 bg-green-600 hover:bg-green-500 rounded-md font-semibold transition cursor-pointer"
           (click)="showTutorial = false"
         >
           Got it!

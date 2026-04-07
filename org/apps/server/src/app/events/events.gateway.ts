@@ -25,7 +25,7 @@ import {
   new ValidationPipe({
     whitelist: true,
     transform: true,
-  })
+  }),
 )
 @WebSocketGateway({
   cors: {
@@ -41,26 +41,16 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   private clientIdToUserIdMap: Map<string, string> = new Map();
   private readonly logger = new Logger(EventsGateway.name);
 
-  constructor(
-    private roomService: RoomService,
-    private matchService: MatchService
-  ) {}
+  constructor(private roomService: RoomService, private matchService: MatchService) {}
 
   handleConnection(client: Socket): void {
-    this.logger.log(
-      `client connected: ${client.id} with user-id: ${client.handshake.auth.userId}`
-    );
+    this.logger.log(`client connected: ${client.id} with user-id: ${client.handshake.auth.userId}`);
     this.clientIdToUserIdMap.set(client.id, client.handshake.auth.userId);
-    this.server.emit(
-      SubscriptionType.ROOMS_UPDATE,
-      this.roomService.getAvailableRooms()
-    );
+    this.server.emit(SubscriptionType.ROOMS_UPDATE, this.roomService.getAvailableRooms());
   }
 
   handleDisconnect(client: Socket): void {
-    this.logger.log(
-      `client disconnected: ${client.id} with user-id: ${client.handshake.auth.userId}`
-    );
+    this.logger.log(`client disconnected: ${client.id} with user-id: ${client.handshake.auth.userId}`);
 
     const userId = this.clientIdToUserIdMap.get(client.id) || '';
     const roomIds = this.roomService.removeUserFromRooms(userId);
@@ -72,35 +62,25 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
         userId,
       });
     }
-    this.server.emit(
-      SubscriptionType.ROOMS_UPDATE,
-      this.roomService.getAvailableRooms()
-    );
+    this.server.emit(SubscriptionType.ROOMS_UPDATE, this.roomService.getAvailableRooms());
 
     this.clientIdToUserIdMap.delete(client.id);
   }
 
   @SubscribeMessage(SubscriptionType.CREATE_ROOM)
-  async handleCreateRoom(
-    @ConnectedSocket() client: Socket
-  ): Promise<{ event: SubscriptionType; data: IRoom }> {
+  async handleCreateRoom(@ConnectedSocket() client: Socket): Promise<{ event: SubscriptionType; data: IRoom }> {
     const userId = this.clientIdToUserIdMap.get(client.id) || '';
     const room = this.roomService.createRoom(userId);
 
     await client.join(room.id);
 
-    this.server.emit(
-      SubscriptionType.ROOMS_UPDATE,
-      this.roomService.getAvailableRooms()
-    );
+    this.server.emit(SubscriptionType.ROOMS_UPDATE, this.roomService.getAvailableRooms());
 
     return { event: SubscriptionType.ROOM_CREATED, data: room };
   }
 
   @SubscribeMessage(SubscriptionType.JOIN_ROOM)
-  async handleJoinRoom(
-    @ConnectedSocket() client: Socket
-  ): Promise<IEventResponse> {
+  async handleJoinRoom(@ConnectedSocket() client: Socket): Promise<IEventResponse> {
     const userId = this.clientIdToUserIdMap.get(client.id) || '';
     const room = this.roomService.joinRoom(userId);
 
@@ -111,10 +91,7 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     await client.join(room.id);
 
     this.server.to(room.id).emit(SubscriptionType.ROOM_READY, room);
-    this.server.emit(
-      SubscriptionType.ROOMS_UPDATE,
-      this.roomService.getAvailableRooms()
-    );
+    this.server.emit(SubscriptionType.ROOMS_UPDATE, this.roomService.getAvailableRooms());
 
     const game = this.handleStartGame(room.id);
 
@@ -124,7 +101,7 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage(SubscriptionType.JOIN_SPECIFIC_ROOM)
   async handleJoinSpecificRoom(
     @ConnectedSocket() client: Socket,
-    @MessageBody() data: JoinSpecificRoomDto
+    @MessageBody() data: JoinSpecificRoomDto,
   ): Promise<IEventResponse> {
     const userId = this.clientIdToUserIdMap.get(client.id) || '';
     const room = this.roomService.joinSpecificRoom(userId, data.roomId);
@@ -138,10 +115,7 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.server.to(room.id).emit(SubscriptionType.ROOM_READY, room);
 
     const game = this.handleStartGame(room.id);
-    this.server.emit(
-      SubscriptionType.ROOMS_UPDATE,
-      this.roomService.getAvailableRooms()
-    );
+    this.server.emit(SubscriptionType.ROOMS_UPDATE, this.roomService.getAvailableRooms());
 
     return { event: SubscriptionType.JOINED_ROOM, data: room, game };
   }
@@ -170,15 +144,13 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
       this.logger.fatal(`The game has been finished!`);
     }
 
-    this.server
-      .to(data.roomId)
-      .emit(SubscriptionType.SHOT_INFORMATION, { data, game });
+    this.server.to(data.roomId).emit(SubscriptionType.SHOT_INFORMATION, { data, game });
   }
 
   @SubscribeMessage(SubscriptionType.SHOT_COMPLETE)
   handleShotComplete(
     @MessageBody()
-    data: ShotCompleteDto
+    data: ShotCompleteDto,
   ): void {
     const room = this.roomService.getRoomByRoomId(data.roomId);
     if (!room) {
@@ -190,15 +162,13 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
       this.logger.fatal(`No room available with roomId: ${updatedGame.roomId}`);
     }
 
-    this.server
-      .to(data.roomId)
-      .emit(SubscriptionType.RESULT_UPDATED, { game: updatedGame });
+    this.server.to(data.roomId).emit(SubscriptionType.RESULT_UPDATED, { game: updatedGame });
   }
 
   @SubscribeMessage(SubscriptionType.GOALKIE_DIVE)
   handleGoalkieDive(
     @MessageBody()
-    data: GoalieDiveDto
+    data: GoalieDiveDto,
   ): void {
     this.server.to(data.roomId).emit(SubscriptionType.GOALKIE_DIVE, data);
   }
@@ -207,13 +177,11 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   handleLeaveRoom(
     @ConnectedSocket() client: Socket,
     @MessageBody()
-    data: LeaveRoomDto
+    data: LeaveRoomDto,
   ): void {
     const userId = this.clientIdToUserIdMap.get(client.id) || '';
     if (data.eventType === EventType.USER_LEFT) {
-      const roomIds = this.roomService.removeUserFromRooms(
-        this.clientIdToUserIdMap.get(client.id) || ''
-      );
+      const roomIds = this.roomService.removeUserFromRooms(this.clientIdToUserIdMap.get(client.id) || '');
 
       for (const roomId of roomIds) {
         const res = {
@@ -224,10 +192,7 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
         this.server.to(roomId).emit(SubscriptionType.ROOM_UPDATE, res);
       }
-      this.server.emit(
-        SubscriptionType.ROOMS_UPDATE,
-        this.roomService.getAvailableRooms()
-      );
+      this.server.emit(SubscriptionType.ROOMS_UPDATE, this.roomService.getAvailableRooms());
     } else {
       const room = this.roomService.getRoomByRoomId(data.roomId);
       if (!room) {
@@ -235,12 +200,7 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
       }
 
       this.roomService.leaveRoom(userId, data.roomId);
-      this.server
-        .to(data.roomId)
-        .emit(
-          SubscriptionType.ROOMS_UPDATE,
-          this.roomService.getAvailableRooms()
-        );
+      this.server.to(data.roomId).emit(SubscriptionType.ROOMS_UPDATE, this.roomService.getAvailableRooms());
     }
   }
 }

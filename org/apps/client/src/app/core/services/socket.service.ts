@@ -35,9 +35,7 @@ export class SocketService {
     let id = window.localStorage.getItem('userId');
 
     if (!id) {
-      id = Array.from({ length: 6 }, () => Math.floor(Math.random() * 10)).join(
-        ''
-      );
+      id = Array.from({ length: 6 }, () => Math.floor(Math.random() * 10)).join('');
       window.localStorage.setItem('userId', id);
     }
 

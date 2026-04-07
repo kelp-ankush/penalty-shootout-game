@@ -1,11 +1,4 @@
-import {
-  IsBoolean,
-  IsEnum,
-  IsNumber,
-  IsNumberString,
-  IsString,
-  ValidateNested,
-} from 'class-validator';
+import { IsBoolean, IsEnum, IsNumber, IsNumberString, IsString, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 import { EventType } from '@org/shared';
 

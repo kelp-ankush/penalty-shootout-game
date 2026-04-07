@@ -4,12 +4,7 @@ import { gsap } from 'gsap';
 
 @Injectable({ providedIn: 'root' })
 export class GameAnimationService {
-  animateBall(
-    ball: HTMLElement,
-    coords: IPoint[],
-    time: number,
-    onComplete?: () => void
-  ): void {
+  animateBall(ball: HTMLElement, coords: IPoint[], time: number, onComplete?: () => void): void {
     setTimeout(() => {
       gsap.to(ball, {
         duration: time,
@@ -46,7 +41,7 @@ export class GameAnimationService {
     xDiff: number,
     onStart: () => void,
     onUpdate: (frame: number) => void,
-    onComplete: () => void
+    onComplete: () => void,
   ): void {
     const totalSize = 11040;
     const frames = 46;
@@ -66,7 +61,7 @@ export class GameAnimationService {
           const frame = Math.floor(this['targets']()[0].progress * 46);
           onUpdate(frame);
         },
-      }
+      },
     );
 
     tl.to(
@@ -82,7 +77,7 @@ export class GameAnimationService {
           onComplete?.();
         },
       },
-      0
+      0,
     );
 
     gsap.to(goalkie, {

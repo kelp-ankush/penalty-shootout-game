@@ -1,11 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  DestroyRef,
-  HostListener,
-  OnInit,
-  signal,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, HostListener, OnInit, signal } from '@angular/core';
 import { ASSETS } from './core/utils/images.constants';
 import { Play } from './features/play/components/play.component';
 import { SocketService } from './core/services/socket.service';
@@ -50,9 +43,7 @@ export class AppComponent implements OnInit {
     let localUserId = window.localStorage.getItem('userId');
 
     if (!localUserId) {
-      localUserId = Array.from({ length: 6 }, () =>
-        Math.floor(Math.random() * 10),
-      ).join('');
+      localUserId = Array.from({ length: 6 }, () => Math.floor(Math.random() * 10)).join('');
       window.localStorage.setItem('userId', localUserId);
     }
 

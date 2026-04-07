@@ -26,9 +26,7 @@ export class RoomService {
   }
 
   joinRoom(userId: string): IRoom | null {
-    const availabeRoom = this.rooms.find(
-      (room) => !room.isLocked && room.users.length === 1
-    );
+    const availabeRoom = this.rooms.find((room) => !room.isLocked && room.users.length === 1);
 
     if (!availabeRoom) {
       return null;
@@ -42,9 +40,7 @@ export class RoomService {
   }
 
   joinSpecificRoom(userId: string, roomId: string): IRoom | null {
-    const availabeRoom = this.rooms.find(
-      (room) => !room.isLocked && room.users.length === 1 && room.id === roomId
-    );
+    const availabeRoom = this.rooms.find((room) => !room.isLocked && room.users.length === 1 && room.id === roomId);
 
     if (!availabeRoom) {
       return null;
