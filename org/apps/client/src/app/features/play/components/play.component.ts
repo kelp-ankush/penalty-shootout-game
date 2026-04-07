@@ -24,7 +24,7 @@ import {
   getViewPortCoords,
 } from './utils/play.util';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { ICachedShot, IGame, IGoalieDiveEvent, IResultUpdateEvent, IShotEvent, IPoint } from '@org/shared';
+import { ICachedShot, IGame, IGoalieDiveEvent, IResultUpdateEvent, IShotEvent, IPoint, EventType } from '@org/shared';
 import { ASSETS } from '../../../core/utils/images.constants';
 import { SocketService } from '../../../core/services/socket.service';
 import { GameAnimationService } from '../services/game-animation.service';
@@ -86,7 +86,7 @@ export class Play implements OnInit, AfterViewInit {
   goalkieSteps = tutorialStepsForGoalkeeper
   intersectionFrame = 0;
   rp: DOMRect | null = null;
-  gameEnded = output<void>();
+  gameEnded = output<EventType>();
   ballRef = viewChild<ElementRef>('ball');
   goalkieRef = viewChild<ElementRef>('goalkie');
   playerRef = viewChild<ElementRef>('player');
@@ -112,7 +112,7 @@ export class Play implements OnInit, AfterViewInit {
     effect(() => {
       if (this.winner()) {
         setTimeout(() => {
-          this.gameEnded.emit();
+          this.gameEnded.emit(EventType.USER_LEFT);
         }, 5000);
       }
     });

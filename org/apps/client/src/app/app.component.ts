@@ -155,7 +155,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.socketService.joinSpecificRoom(roomId);
   }
 
-  leaveRoom(eventType = ''): void {
+  leaveRoom(eventType: EventType): void {
     const room = this.currentRoom();
 
     if (!room) {
@@ -163,7 +163,7 @@ export class AppComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.socketService.leaveRoom(room.id, eventType);
+    this.socketService.leaveRoom({roomId: room.id, eventType});
     this.rooms.set(this.rooms().filter((r) => r.id !== room.id));
   }
 }

@@ -63,7 +63,7 @@
       <app-play
         [userId]="userId"
         [roomId]="currentRoom()?.id ?? ''"
-        (gameEnded)="leaveRoom()"
+        (gameEnded)="leaveRoom($event)"
       ></app-play>
     </div>
   }

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Socket, io } from 'socket.io-client';
 import { environment } from '../../../environments/environment';
-import { IGame, IGoalieDive, IResultUpdateEvent, IRoom, IRoomUpdateEvent, IShotComplete, IShotData, IShotEvent, SubscriptionType } from '@org/shared';
+import { IGame, IGoalieDive, ILeaveRoom, IResultUpdateEvent, IRoom, IRoomUpdateEvent, IShotComplete, IShotData, IShotEvent, SubscriptionType } from '@org/shared';
 
 
 @Injectable({
@@ -62,7 +62,7 @@ export class SocketService {
   }
 
   joinSpecificRoom(roomId: string): void {
-    this.emit(SubscriptionType.JOIN_SPECIFIC_ROOM, roomId);
+    this.emit(SubscriptionType.JOIN_SPECIFIC_ROOM, {roomId});
   }
 
   shootBall(data: IShotData): void {
@@ -77,11 +77,8 @@ export class SocketService {
     this.emit<IGoalieDive>(SubscriptionType.GOALKIE_DIVE, data);
   }
 
-  leaveRoom(roomId: string, eventType: string): void {
-    this.emit(SubscriptionType.LEAVE_ROOM, {
-      roomId,
-      eventType,
-    });
+  leaveRoom(data: ILeaveRoom): void {
+    this.emit(SubscriptionType.LEAVE_ROOM, data);
   }
 
   onRoomsUpdate(): Observable<IRoom[]> {

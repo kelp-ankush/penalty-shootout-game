@@ -1,3 +1,5 @@
+import { EventType } from "../enums/event.enum";
+
 export interface IRoom {
   id: string;
   users: string[];
@@ -5,7 +7,6 @@ export interface IRoom {
 }
 
 export interface ILeaveRoom{
-  userId: string;
   roomId: string;
-  eventType: string;
+  eventType: EventType;
 }
