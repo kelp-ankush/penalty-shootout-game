@@ -25,7 +25,7 @@
       "path": "./tsconfig.app.json"
     },
     {
-      "path": "../../dist/shared/src"
+      "path": "../../shared"
     }
   ],
   "ts-node": {
