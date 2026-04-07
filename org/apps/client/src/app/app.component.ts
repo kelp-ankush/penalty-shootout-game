@@ -3,16 +3,15 @@ import {
   Component,
   HostListener,
   OnInit,
-  OnDestroy,
   signal,
 } from '@angular/core';
-import { debounceTime, delay, of, Subject, switchMap, takeUntil } from 'rxjs';
 import { ASSETS } from './core/utils/images.constants';
 import { Play } from './features/play/components/play.component';
 import { SocketService } from './core/services/socket.service';
 import { ImagePreloadService } from './core/services/image-preload.service';
 import { inject } from '@angular/core';
 import { EventType, IRoom, IRoomUpdateEvent } from "@org/shared"
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-root',
@@ -20,7 +19,7 @@ import { EventType, IRoom, IRoomUpdateEvent } from "@org/shared"
   imports: [Play],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AppComponent implements OnInit, OnDestroy {
+export class AppComponent implements OnInit{
   userId = '';
   rooms = signal<IRoom[]>([]);
   status = signal<string>('');
@@ -29,8 +28,6 @@ export class AppComponent implements OnInit, OnDestroy {
   socketService = inject(SocketService);
   imagePreloadService = inject(ImagePreloadService);
 
-  private readonly destroy$ = new Subject<void>();
-
   constructor() {
     this.userId = this.generateOrGetUserId();
   }
@@ -38,11 +35,6 @@ export class AppComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.preloadAssets();
     this.listenToSocketEvents();
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 
   @HostListener('window:resize')
@@ -81,7 +73,7 @@ export class AppComponent implements OnInit, OnDestroy {
   private listenToSocketEvents(): void {
     this.socketService
       .onRoomsUpdate()
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed())
       .subscribe((rooms: IRoom[]) => {
         this.rooms.set(rooms);
         this.status.set('Available rooms fetched');
@@ -89,7 +81,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
     this.socketService
       .onRoomUpdate()
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed())
       .subscribe((data: IRoomUpdateEvent) => {
         if (data.event === EventType.USER_LEFT) {
           this.handleUserLeftEvent(data);
@@ -98,7 +90,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
     this.socketService
       .onRoomReady()
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed())
       .subscribe((room: IRoom) => {
         this.currentRoom.set(room);
         window.localStorage.setItem('current-room', JSON.stringify(room));
@@ -107,7 +99,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
     this.socketService
       .onRoomCreated()
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed())
       .subscribe((room: IRoom) => {
         this.currentRoom.set(room);
         window.localStorage.setItem('current-room', JSON.stringify(room));
