@@ -97,6 +97,9 @@ export class Play implements OnInit, AfterViewInit {
   private gameAnimationService = inject(GameAnimationService)
   private renderer = inject(Renderer2)
 
+  private boundMouseMove = this.onMouseMove.bind(this);
+  private boundMouseUp = this.onMouseUp.bind(this);
+
   constructor(
   ) {
     gsap.registerPlugin(MotionPathPlugin);
@@ -192,7 +195,7 @@ export class Play implements OnInit, AfterViewInit {
     this.goalkieDivedClient = true;
   }
 
-  onMouseMove = (e: MouseEvent | PointerEvent) => {
+  onMouseMove(e: MouseEvent | PointerEvent) {
     if (!this.isDragging || this.winner() || !this.rp) return;
     const arrowElem = document.getElementById('arrow') as HTMLElement;
 
@@ -221,33 +224,36 @@ export class Play implements OnInit, AfterViewInit {
     }
   };
 
-  onMouseDown = (e: MouseEvent) => {
+  onMouseDown(e: MouseEvent) {
     if (this.winner()) return;
 
     e.preventDefault();
     this.isDragging = true;
 
-    document.addEventListener('mousemove', this.onMouseMove);
-    document.addEventListener('mouseup', this.onMouseUp);
+    document.addEventListener('mousemove', this.boundMouseMove);
+    document.addEventListener('mouseup', this.boundMouseUp);
   }
 
-  onPointerDown = (e: PointerEvent) => {
+  onPointerDown(e: PointerEvent) {
     if (this.winner()) return;
 
     e.preventDefault();
     this.isDragging = true;
 
-    document.addEventListener('pointermove', this.onMouseMove);
-    document.addEventListener('pointerup', this.onMouseUp);
+    document.addEventListener('pointermove', this.boundMouseMove);
+    document.addEventListener('pointerup', this.boundMouseUp);
   }
 
-  onMouseUp = () => {
+  onMouseUp() {
     if (this.winner()) return;
 
     this.isDragging = false;
 
-    document.removeEventListener('mousemove', this.onMouseMove);
-    document.removeEventListener('mouseup', this.onMouseUp);
+    document.removeEventListener('mousemove', this.boundMouseMove);
+    document.removeEventListener('mouseup', this.boundMouseUp);
+
+    document.removeEventListener('pointermove', this.boundMouseMove);
+    document.removeEventListener('pointerup', this.boundMouseUp);
   };
 
   onLockDirection() {
@@ -262,7 +268,7 @@ export class Play implements OnInit, AfterViewInit {
     const netsRect = nets?.getClientRects()[0];
     const lockAim = document.getElementById('lock-aim') as HTMLElement;
 
-    if (nets && netsRect ) {
+    if (nets && netsRect) {
       const circle = document.createElement('div');
       const ballPosView = getViewPortCoords(this.ballPos(), this.rp);
 
@@ -386,7 +392,7 @@ export class Play implements OnInit, AfterViewInit {
   }
 
   handleTakeShot(res: IShotEvent) {
-    if(!this.rp) return;
+    if (!this.rp) return;
     const { data, game } = res;
 
     this.shouldGoalkieDive = true;
