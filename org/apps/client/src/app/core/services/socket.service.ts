@@ -2,8 +2,18 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Socket, io } from 'socket.io-client';
 import { environment } from '../../../environments/environment';
-import { IGame, IGoalieDive, ILeaveRoom, IResultUpdateEvent, IRoom, IRoomUpdateEvent, IShotComplete, IShotData, IShotEvent, SubscriptionType } from '@org/shared';
-
+import {
+  IGame,
+  IGoalieDive,
+  ILeaveRoom,
+  IResultUpdateEvent,
+  IRoom,
+  IRoomUpdateEvent,
+  IShotComplete,
+  IShotData,
+  IShotEvent,
+  SubscriptionType,
+} from '@org/shared';
 
 @Injectable({
   providedIn: 'root',
@@ -12,28 +22,27 @@ export class SocketService {
   private readonly socket: Socket;
   private readonly userId: string;
 
-  
   constructor() {
     this.userId = this.getOrCreateUserId();
     this.socket = io(environment.wsUrl, {
       auth: { userId: this.userId },
-      transports: ['websocket'] ,
-      path: '/socket.io'
+      transports: ['websocket'],
+      path: '/socket.io',
     });
   }
-
 
   private getOrCreateUserId(): string {
     let id = window.localStorage.getItem('userId');
 
     if (!id) {
-      id = Array.from({ length: 6 }, () => Math.floor(Math.random() * 10)).join('');
+      id = Array.from({ length: 6 }, () => Math.floor(Math.random() * 10)).join(
+        ''
+      );
       window.localStorage.setItem('userId', id);
     }
 
     return id;
   }
-
 
   private emit<T>(event: string, data?: T): void {
     if (data) {
@@ -62,7 +71,7 @@ export class SocketService {
   }
 
   joinSpecificRoom(roomId: string): void {
-    this.emit(SubscriptionType.JOIN_SPECIFIC_ROOM, {roomId});
+    this.emit(SubscriptionType.JOIN_SPECIFIC_ROOM, { roomId });
   }
 
   shootBall(data: IShotData): void {

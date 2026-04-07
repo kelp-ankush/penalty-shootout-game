@@ -3,7 +3,6 @@ import { IGame, IShotComplete } from '@org/shared';
 
 @Injectable()
 export class MatchService {
-
   private games: IGame[] = [];
 
   createGame(roomId: string, players: string[]): IGame {

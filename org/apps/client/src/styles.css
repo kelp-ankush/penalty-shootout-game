@@ -18,7 +18,7 @@
   --moveForward-translateX-end: 110px;
   --moveForward-translateY-end: -40px;
   --dive-background-position-end: -11040px;
-  
+
   --animation-duration: 1s;
   --z-index-player: 50;
 }
@@ -60,7 +60,8 @@
     transform: translate(-50%, 0%) translateX(0px);
   }
   to {
-    transform: translate(-50%, var(--moveForward-translateY-end)) translateX(var(--moveForward-translateX-end));
+    transform: translate(-50%, var(--moveForward-translateY-end))
+      translateX(var(--moveForward-translateX-end));
   }
 }
 

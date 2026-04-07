@@ -1,4 +1,4 @@
-import { IFrame } from "../../../../core/interfaces/game.interface";
+import { IFrame } from '../../../../core/interfaces/game.interface';
 
 export const tutorialStepsForStriker = [
   'Drag the arrow downwards to aim your shot',
@@ -12,9 +12,13 @@ export const tutorialStepsForGoalkeeper = [
   'Tap the goalpost area to dive in that direction',
 ];
 
-
 export const leftHitBoxes: IFrame[] = [
-  ...Array.from({ length: 9 }, () => ({ x: 100, y: 20, width: 65, height: 160 })),
+  ...Array.from({ length: 9 }, () => ({
+    x: 100,
+    y: 20,
+    width: 65,
+    height: 160,
+  })),
   ...Array.from({ length: 6 }, () => ({
     x: 110,
     y: 30,
@@ -27,7 +31,12 @@ export const leftHitBoxes: IFrame[] = [
     width: 145,
     height: 155,
   })),
-  ...Array.from({ length: 21 }, () => ({ x: 20, y: 60, width: 180, height: 120 })),
+  ...Array.from({ length: 21 }, () => ({
+    x: 20,
+    y: 60,
+    width: 180,
+    height: 120,
+  })),
 ];
 
 export const rightHitBoxes: IFrame[] = [

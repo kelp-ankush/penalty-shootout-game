@@ -1,70 +1,133 @@
 <div
-  class="min-h-screen bg-linear-to-br from-green-900 via-black to-green-800 flex items-center justify-center text-white"
+  class="
+    min-h-screen
+    bg-linear-to-br
+    from-green-900
+    via-black
+    to-green-800
+    flex
+    items-center
+    justify-center
+    text-white
+  "
 >
   @if (!currentRoom()) {
+  <div
+    class="
+      w-full
+      max-w-md
+      bg-black/60
+      backdrop-blur-md
+      rounded-2xl
+      shadow-xl
+      p-6
+      border border-white/10
+    "
+  >
+    <h1 class="text-3xl font-bold text-center mb-2">⚽ Penalty Shootout 🎮</h1>
+    <p class="text-center text-gray-300 mb-6">Player ID: {{ userId }}</p>
+
+    @if (userLeft()) {
     <div
-      class="w-full max-w-md bg-black/60 backdrop-blur-md rounded-2xl shadow-xl p-6 border border-white/10"
+      class="
+        border border-red-600
+        text-red-600 text-center text-sm
+        py-2
+        rounded-md
+        mb-4
+        animate-pulse
+      "
     >
-      <h1 class="text-3xl font-bold text-center mb-2">⚽ Penalty Shootout 🎮</h1>
-      <p class="text-center text-gray-300 mb-6">Player ID: {{ userId }}</p>
+      {{ userLeft() }}
+    </div>
+    } @else {
+    <div class="flex flex-col gap-3 mb-6">
+      <button
+        class="
+          w-full
+          py-3
+          rounded-lg
+          bg-green-500
+          hover:bg-green-600
+          transition
+          font-semibold
+        "
+        (click)="createRoom()"
+      >
+        Create Room
+      </button>
 
-      @if (userLeft()) {
-        <div
-          class="border border-red-600 text-red-600 text-center text-sm py-2 rounded-md mb-4 animate-pulse"
+      <button
+        class="
+          w-full
+          py-3
+          rounded-lg
+          bg-white
+          text-black
+          hover:bg-gray-200
+          transition
+          font-semibold
+        "
+        (click)="joinRoom()"
+      >
+        Join Room
+      </button>
+    </div>
+
+    <div class="flex items-center gap-2 mb-4">
+      <div class="flex-1 h-px bg-gray-600"></div>
+      <span class="text-sm text-gray-400">Available Rooms</span>
+      <div class="flex-1 h-px bg-gray-600"></div>
+    </div>
+
+    <ul class="max-h-48 overflow-y-auto space-y-2 pr-1">
+      @for (room of rooms(); track room.id) {
+      <li
+        class="
+          flex
+          items-center
+          justify-between
+          bg-white/10
+          hover:bg-white/20
+          transition
+          px-3
+          py-2
+          rounded-lg
+          border border-white/10
+        "
+      >
+        <span class="font-mono tracking-wider text-sm"> {{ room.id }} </span>
+
+        <button
+          class="
+            text-sm
+            px-3
+            py-1
+            rounded-md
+            bg-blue-500
+            hover:bg-blue-600
+            transition
+            disabled:cursor-not-allowed
+            disabled:bg-gray-400
+            disabled:text-gray-700
+          "
+          (click)="joinSpecificRoom(room.id)"
+          [disabled]="room.users.length === 2"
         >
-          {{ userLeft() }}
-        </div>
-      } @else {
-        <div class="flex flex-col gap-3 mb-6">
-          <button
-            class="w-full py-3 rounded-lg bg-green-500 hover:bg-green-600 transition font-semibold"
-            (click)="createRoom()"
-          >
-            Create Room
-          </button>
-
-          <button
-            class="w-full py-3 rounded-lg bg-white text-black hover:bg-gray-200 transition font-semibold"
-            (click)="joinRoom()"
-          >
-            Join Room
-          </button>
-        </div>
-
-        <div class="flex items-center gap-2 mb-4">
-          <div class="flex-1 h-px bg-gray-600"></div>
-          <span class="text-sm text-gray-400">Available Rooms</span>
-          <div class="flex-1 h-px bg-gray-600"></div>
-        </div>
-
-        <ul class="max-h-48 overflow-y-auto space-y-2 pr-1">
-          @for (room of rooms(); track room.id) {
-            <li
-              class="flex items-center justify-between bg-white/10 hover:bg-white/20 transition px-3 py-2 rounded-lg border border-white/10"
-            >
-              <span class="font-mono tracking-wider text-sm">
-                {{ room.id }}
-              </span>
-
-              <button
-                class="text-sm px-3 py-1 rounded-md bg-blue-500 hover:bg-blue-600 transition disabled:cursor-not-allowed disabled:bg-gray-400 disabled:text-gray-700"
-                (click)="joinSpecificRoom(room.id)"
-                [disabled]="room.users.length === 2"
-              >
-                Join
-              </button>
-            </li>
-          }
-        </ul>
+          Join
+        </button>
+      </li>
       }
-    </div>
+    </ul>
+    }
+  </div>
   } @else {
-    <div class=" flex items-center justify-center">
-      <app-play
-        [userId]="userId"
-        [roomId]="currentRoom()?.id ?? ''"
-        (gameEnded)="leaveRoom($event)"
-      ></app-play>
-    </div>
+  <div class="flex items-center justify-center">
+    <app-play
+      [userId]="userId"
+      [roomId]="currentRoom()?.id ?? ''"
+      (gameEnded)="leaveRoom($event)"
+    ></app-play>
+  </div>
   }
 </div>

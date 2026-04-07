@@ -10,7 +10,7 @@ import { Play } from './features/play/components/play.component';
 import { SocketService } from './core/services/socket.service';
 import { ImagePreloadService } from './core/services/image-preload.service';
 import { inject } from '@angular/core';
-import { EventType, IRoom, IRoomUpdateEvent } from "@org/shared"
+import { EventType, IRoom, IRoomUpdateEvent } from '@org/shared';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
@@ -19,7 +19,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   imports: [Play],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AppComponent implements OnInit{
+export class AppComponent implements OnInit {
   userId = '';
   rooms = signal<IRoom[]>([]);
   status = signal<string>('');
@@ -116,11 +116,11 @@ export class AppComponent implements OnInit{
         ? data.msg
         : 'You resized the window, which is strictly not allowed! Start a fresh game.';
 
-    this.userLeft.set(message)
+    this.userLeft.set(message);
 
     setTimeout(() => {
-      this.userLeft.set("")
-    }, 2000)
+      this.userLeft.set('');
+    }, 2000);
   }
 
   createRoom(): void {

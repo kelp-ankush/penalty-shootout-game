@@ -4,10 +4,10 @@
   "include": [],
   "references": [
     {
-      "path": "./tsconfig.app.json",
-    }, 
+      "path": "./tsconfig.app.json"
+    },
     {
-      "path": "../../shared" 
+      "path": "../../shared"
     }
   ],
   "compilerOptions": {

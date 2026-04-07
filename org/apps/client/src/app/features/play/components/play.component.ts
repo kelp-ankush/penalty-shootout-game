@@ -24,21 +24,34 @@ import {
   getViewPortCoords,
 } from './utils/play.util';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { ICachedShot, IGame, IGoalieDiveEvent, IResultUpdateEvent, IShotEvent, IPoint, EventType } from '@org/shared';
+import {
+  ICachedShot,
+  IGame,
+  IGoalieDiveEvent,
+  IResultUpdateEvent,
+  IShotEvent,
+  IPoint,
+  EventType,
+} from '@org/shared';
 import { ASSETS } from '../../../core/utils/images.constants';
 import { SocketService } from '../../../core/services/socket.service';
 import { GameAnimationService } from '../services/game-animation.service';
-import { jumpHitBoxes, leftHitBoxes, rightHitBoxes, tutorialStepsForGoalkeeper, tutorialStepsForStriker } from './utils/play.constants';
+import {
+  jumpHitBoxes,
+  leftHitBoxes,
+  rightHitBoxes,
+  tutorialStepsForGoalkeeper,
+  tutorialStepsForStriker,
+} from './utils/play.constants';
 import { IFrame, IRect } from '../../../core/interfaces/game.interface';
 import { GoalkieAction } from '../../../core/enums/goalkie-dive.enum';
-
 
 @Component({
   selector: 'app-play',
   templateUrl: './play.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [NgClass],
-  standalone: true
+  standalone: true,
 })
 export class Play implements OnInit, AfterViewInit {
   userId = input<string>('');
@@ -52,9 +65,9 @@ export class Play implements OnInit, AfterViewInit {
   ballAnimationDone = signal<boolean>(false);
   goalkieDiveDirection = signal<string>(ASSETS.GOALKEEPER.LEFT);
   playerImage = signal<string>(ASSETS.PLAYER.BLUE);
-  netsImage = ASSETS.ENVIRONMENT.NETS
-  audienceImage = ASSETS.ENVIRONMENT.AUDIENCE
-  fieldImage = ASSETS.ENVIRONMENT.FIELD
+  netsImage = ASSETS.ENVIRONMENT.NETS;
+  audienceImage = ASSETS.ENVIRONMENT.AUDIENCE;
+  fieldImage = ASSETS.ENVIRONMENT.FIELD;
   round = signal(1);
   maxRounds = 5;
   ballPos = signal<IPoint>({ x: 0, y: 0 });
@@ -82,8 +95,8 @@ export class Play implements OnInit, AfterViewInit {
   });
   cachedShot: ICachedShot | null = null;
   showTutorial = false;
-  strikerSteps = tutorialStepsForStriker
-  goalkieSteps = tutorialStepsForGoalkeeper
+  strikerSteps = tutorialStepsForStriker;
+  goalkieSteps = tutorialStepsForGoalkeeper;
   intersectionFrame = 0;
   rp: DOMRect | null = null;
   gameEnded = output<EventType>();
@@ -94,14 +107,13 @@ export class Play implements OnInit, AfterViewInit {
   playgroundRef = viewChild<ElementRef>('playground');
 
   private socketService = inject(SocketService);
-  private gameAnimationService = inject(GameAnimationService)
-  private renderer = inject(Renderer2)
+  private gameAnimationService = inject(GameAnimationService);
+  private renderer = inject(Renderer2);
 
   private boundMouseMove = this.onMouseMove.bind(this);
   private boundMouseUp = this.onMouseUp.bind(this);
 
-  constructor(
-  ) {
+  constructor() {
     gsap.registerPlugin(MotionPathPlugin);
     gsap.registerPlugin(ScrollTrigger);
 
@@ -145,9 +157,13 @@ export class Play implements OnInit, AfterViewInit {
     const showPlayground = this.showPlayground();
     this.checkIfToShowTutorials(showPlayground);
 
-    this.socketService.onGameStart().subscribe((data: IGame) => this.handleGameStart(data));
+    this.socketService
+      .onGameStart()
+      .subscribe((data: IGame) => this.handleGameStart(data));
 
-    this.socketService.onTakeShot().subscribe((res: IShotEvent) => this.handleTakeShot(res));
+    this.socketService
+      .onTakeShot()
+      .subscribe((res: IShotEvent) => this.handleTakeShot(res));
 
     this.socketService
       .onGoalkieDive()
@@ -181,7 +197,7 @@ export class Play implements OnInit, AfterViewInit {
 
     const containerPos = getContainerCoords(
       { x: event.clientX - 40, y: event.clientY - 80 },
-      this.rp,
+      this.rp
     );
 
     this.goalkiePos.set({ x: containerPos.x, y: containerPos.y });
@@ -207,22 +223,26 @@ export class Play implements OnInit, AfterViewInit {
 
       if (this.isDragging && arrowElem && e.x !== 0 && e.y !== 0) {
         const YDiff = this.initialArrowPos.y - e.y;
-        const radians = Math.atan2(this.initialArrowPos.y - e.y, this.initialArrowPos.x - e.x);
+        const radians = Math.atan2(
+          this.initialArrowPos.y - e.y,
+          this.initialArrowPos.x - e.x
+        );
         const degrees = radians * (180 / Math.PI);
 
-        arrowElem.style.height = this.Math.max(132, this.Math.abs(YDiff) * 1.5) + 'px';
+        arrowElem.style.height =
+          this.Math.max(132, this.Math.abs(YDiff) * 1.5) + 'px';
         arrowElem.style.transformOrigin = 'bottom';
         arrowElem.style.transform =
           'rotate(' + (degrees > 0 ? 90 - degrees : 90 + degrees) + 'deg)';
         this.ballPos.set(
           getContainerCoords(
             { x: calcX - 10, y: arrowElem?.getBoundingClientRect().top - 20 },
-            this.rp,
-          ),
+            this.rp
+          )
         );
       }
     }
-  };
+  }
 
   onMouseDown(e: MouseEvent) {
     if (this.winner()) return;
@@ -254,7 +274,7 @@ export class Play implements OnInit, AfterViewInit {
 
     document.removeEventListener('pointermove', this.boundMouseMove);
     document.removeEventListener('pointerup', this.boundMouseUp);
-  };
+  }
 
   onLockDirection() {
     if (this.winner() || !this.rp) return;
@@ -280,7 +300,8 @@ export class Play implements OnInit, AfterViewInit {
       circle.id = 'marker';
 
       nets?.appendChild(circle);
-      if (this.game && this.game.turn === this.userId()) lockAim?.classList?.add('invisible');
+      if (this.game && this.game.turn === this.userId())
+        lockAim?.classList?.add('invisible');
     }
 
     const arrow = document.getElementById('arrow') as HTMLElement;
@@ -293,16 +314,24 @@ export class Play implements OnInit, AfterViewInit {
   onLockPower() {
     if (this.winner() || this.powerChosen || !this.rp) return;
 
-
     const indicator = document.getElementById('indicator') as HTMLElement;
     const marker = document.getElementById('marker');
-    const powerContianer = document.getElementById('power-container') as HTMLElement;
+    const powerContianer = document.getElementById(
+      'power-container'
+    ) as HTMLElement;
 
     const powerRect = powerContianer?.getClientRects()[0];
     const indicatorRect = indicator?.getClientRects()[0];
     const markerRect = marker?.getClientRects()[0];
 
-    if (indicator && indicatorRect && powerContianer && powerRect && marker && markerRect) {
+    if (
+      indicator &&
+      indicatorRect &&
+      powerContianer &&
+      powerRect &&
+      marker &&
+      markerRect
+    ) {
       indicator.classList.remove('indicator');
       this.powerChosen = true;
 
@@ -323,7 +352,10 @@ export class Play implements OnInit, AfterViewInit {
             userId: this.userId(),
             roomId: this.roomId(),
             power,
-            destPos: getContainerCoords({ x: markerRect.x, y: markerRect.y }, rp),
+            destPos: getContainerCoords(
+              { x: markerRect.x, y: markerRect.y },
+              rp
+            ),
           });
           indicator.style.left = (-2).toString() + 'px';
           indicator.style.top = (-12).toString() + 'px';
@@ -415,7 +447,12 @@ export class Play implements OnInit, AfterViewInit {
     const coords: IPoint[] = calculateTrajectory(vertex, point);
 
     this.animatePlayer(player);
-    this.gameAnimationService.animateBall(ball, coords, time, this.handleCheckGoal.bind(this));
+    this.gameAnimationService.animateBall(
+      ball,
+      coords,
+      time,
+      this.handleCheckGoal.bind(this)
+    );
 
     if (marker) {
       marker.remove();
@@ -508,7 +545,7 @@ export class Play implements OnInit, AfterViewInit {
         xDiff,
         this.setGoalkieAnimationDone.bind(this, GoalkieAction.DIVING),
         (frame: number) => this.updateCurrentIntersectionFrame(frame),
-        this.setGoalkieAnimationDone.bind(this, GoalkieAction.DIVED),
+        this.setGoalkieAnimationDone.bind(this, GoalkieAction.DIVED)
       );
     }
   }
@@ -547,29 +584,40 @@ export class Play implements OnInit, AfterViewInit {
   private initializeValues() {
     setTimeout(() => {
       const ballRect = this.ballRef()?.nativeElement?.getBoundingClientRect();
-      const goalkieRect = (this.goalkieRef()?.nativeElement as HTMLElement)?.getBoundingClientRect();
-      const arrowRect = (document.getElementById('arrow') as HTMLElement)?.getBoundingClientRect();
+      const goalkieRect = (
+        this.goalkieRef()?.nativeElement as HTMLElement
+      )?.getBoundingClientRect();
+      const arrowRect = (
+        document.getElementById('arrow') as HTMLElement
+      )?.getBoundingClientRect();
 
       if (this.initialBallPos.x === 0)
         this.initialBallPos = { x: ballRect?.x ?? 0, y: ballRect?.y ?? 0 };
       if (this.initialGoalkiePos.x === 0)
-        this.initialGoalkiePos = { x: goalkieRect?.x ?? 0, y: goalkieRect?.y ?? 0 };
+        this.initialGoalkiePos = {
+          x: goalkieRect?.x ?? 0,
+          y: goalkieRect?.y ?? 0,
+        };
       this.initialArrowPos = { x: arrowRect?.x ?? 0, y: arrowRect?.y ?? 0 };
     }, 200);
   }
 
   private animatePlayer(player: HTMLElement) {
-    this.renderer.setStyle(player, 'animation', 'moveForward 4s alternate 0.6s, kick 4s steps(96)');
+    this.renderer.setStyle(
+      player,
+      'animation',
+      'moveForward 4s alternate 0.6s, kick 4s steps(96)'
+    );
   }
 
   private playGoalSound() {
     this.goalAudio.currentTime = 0;
-    this.goalAudio.play()
+    this.goalAudio.play();
   }
 
   private playSaveSound() {
     this.saveAudio.currentTime = 0;
-    this.saveAudio.play()
+    this.saveAudio.play();
   }
 
   private setGoalkieAnimationDone(status: string) {
@@ -591,7 +639,9 @@ export class Play implements OnInit, AfterViewInit {
   }
 
   private checkIfToShowTutorials(showPlayground: boolean) {
-    const tutorialSeen = JSON.parse(localStorage.getItem('tutorialSeen') || 'false');
+    const tutorialSeen = JSON.parse(
+      localStorage.getItem('tutorialSeen') || 'false'
+    );
     if (tutorialSeen) {
       this.showTutorial = false;
     } else if (showPlayground) {

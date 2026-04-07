@@ -1,68 +1,72 @@
-import { IsBoolean, IsEnum, IsNumber, IsNumberString, IsString, ValidateNested } from 'class-validator';
+import {
+  IsBoolean,
+  IsEnum,
+  IsNumber,
+  IsNumberString,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { EventType } from '@org/shared';
 
-
-
 export class JoinSpecificRoomDto {
-    @IsString()
-    roomId: string;
+  @IsString()
+  roomId: string;
 }
 
 class DestPosDto {
-    @IsNumber()
-    x: number;
+  @IsNumber()
+  x: number;
 
-    @IsNumber()
-    y: number;
+  @IsNumber()
+  y: number;
 }
 
 export class TakeShotGameDto {
-    @IsNumberString()
-    userId: string;
+  @IsNumberString()
+  userId: string;
 
-    @IsString()
-    roomId: string;
+  @IsString()
+  roomId: string;
 
-    @IsNumber()
-    power: number;
+  @IsNumber()
+  power: number;
 
-    @ValidateNested()
-    @Type(() => DestPosDto)
-    destPos: DestPosDto;
+  @ValidateNested()
+  @Type(() => DestPosDto)
+  destPos: DestPosDto;
 }
 
 export class ShotCompleteDto {
-    @IsNumberString()
-    userId: string;
+  @IsNumberString()
+  userId: string;
 
-    @IsString()
-    roomId: string;
+  @IsString()
+  roomId: string;
 
-    @IsBoolean()
-    isGoal: boolean;
+  @IsBoolean()
+  isGoal: boolean;
 
-    @IsString()
-    turn: string;
+  @IsString()
+  turn: string;
 }
 
 export class GoalieDiveDto {
-    @IsNumberString()
-    userId: string;
+  @IsNumberString()
+  userId: string;
 
-    @IsString()
-    roomId: string;
+  @IsString()
+  roomId: string;
 
-    @ValidateNested()
-    @Type(() => DestPosDto)
-    destPos: DestPosDto;
+  @ValidateNested()
+  @Type(() => DestPosDto)
+  destPos: DestPosDto;
 }
 
 export class LeaveRoomDto {
-    @IsString()
-    roomId: string;
+  @IsString()
+  roomId: string;
 
-    @IsEnum(EventType)
-    eventType: EventType;
+  @IsEnum(EventType)
+  eventType: EventType;
 }
-

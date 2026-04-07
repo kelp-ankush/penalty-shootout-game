@@ -1,4 +1,4 @@
-import { EventType } from "../enums/event.enum";
+import { EventType } from '../enums/event.enum';
 
 export interface IRoom {
   id: string;
@@ -6,7 +6,7 @@ export interface IRoom {
   isLocked: boolean;
 }
 
-export interface ILeaveRoom{
+export interface ILeaveRoom {
   roomId: string;
   eventType: EventType;
 }

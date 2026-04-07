@@ -1,6 +1,6 @@
-import { SubscriptionType } from "@org/shared";
+import { SubscriptionType } from '@org/shared';
 
 export interface IEventResponse {
-    event: SubscriptionType,
-    [key: string]: unknown;
+  event: SubscriptionType;
+  [key: string]: unknown;
 }

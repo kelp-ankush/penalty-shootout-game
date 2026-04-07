@@ -4,8 +4,12 @@ import { gsap } from 'gsap';
 
 @Injectable({ providedIn: 'root' })
 export class GameAnimationService {
-
-  animateBall(ball: HTMLElement, coords: IPoint[], time: number, onComplete?: () => void): void {
+  animateBall(
+    ball: HTMLElement,
+    coords: IPoint[],
+    time: number,
+    onComplete?: () => void
+  ): void {
     setTimeout(() => {
       gsap.to(ball, {
         duration: time,
@@ -19,7 +23,7 @@ export class GameAnimationService {
             const currentY = gsap.getProperty(ball, 'y') as number;
 
             gsap.to(ball, {
-              y: currentY + 140, 
+              y: currentY + 140,
               x: currentX,
               duration: 1,
               ease: 'bounce.out',
@@ -42,7 +46,7 @@ export class GameAnimationService {
     xDiff: number,
     onStart: () => void,
     onUpdate: (frame: number) => void,
-    onComplete: () => void,
+    onComplete: () => void
   ): void {
     const totalSize = 11040;
     const frames = 46;
@@ -51,7 +55,7 @@ export class GameAnimationService {
     gsap.set(goalkie, {
       backgroundPosition: '0px 0px',
     });
-    
+
     gsap.to(
       { progress: 0 },
       {
@@ -62,7 +66,7 @@ export class GameAnimationService {
           const frame = Math.floor(this['targets']()[0].progress * 46);
           onUpdate(frame);
         },
-      },
+      }
     );
 
     tl.to(
@@ -75,21 +79,16 @@ export class GameAnimationService {
           onStart?.();
         },
         onComplete: () => {
-          onComplete?.() 
+          onComplete?.();
         },
       },
-      0,
+      0
     );
 
-    gsap.to(
-      goalkie,
-      {
-        x: `+=${xDiff}`,
-        duration: 1.5,
-        ease: 'steps(46)',
-      },
-    );
+    gsap.to(goalkie, {
+      x: `+=${xDiff}`,
+      duration: 1.5,
+      ease: 'steps(46)',
+    });
   }
 }
-
-

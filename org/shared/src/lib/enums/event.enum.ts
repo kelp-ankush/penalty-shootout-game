@@ -19,4 +19,3 @@ export enum SubscriptionType {
   SHOT_INFORMATION = 'shot-information',
   RESULT_UPDATED = 'result-updated',
 }
-

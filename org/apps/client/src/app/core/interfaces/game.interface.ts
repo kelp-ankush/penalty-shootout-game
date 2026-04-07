@@ -1,13 +1,13 @@
 export interface IFrame {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
 }
 
 export interface IRect {
-    top: number,
-    left: number,
-    right: number,
-    bottom: number
+  top: number;
+  left: number;
+  right: number;
+  bottom: number;
 }

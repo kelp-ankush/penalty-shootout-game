@@ -6,8 +6,8 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     logger: new ConsoleLogger({
       colors: true,
-      timestamp: true
-    })
+      timestamp: true,
+    }),
   });
   const globalPrefix = 'api';
   app.setGlobalPrefix(globalPrefix);
@@ -18,9 +18,9 @@ async function bootstrap() {
   });
   const port = process.env.PORT || 3000;
   await app.listen(port);
-  
+
   Logger.log(
-    `🚀 Application is running on: http://localhost:${port}/${globalPrefix}`,
+    `🚀 Application is running on: http://localhost:${port}/${globalPrefix}`
   );
 }
 
