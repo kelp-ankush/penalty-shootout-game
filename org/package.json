@@ -11,6 +11,7 @@
     "@angular/forms": "21.2.7",
     "@angular/platform-browser": "21.2.7",
     "@angular/router": "21.2.7",
+    "@babel/runtime": "7.29.2",
     "@nestjs/common": "11.1.18",
     "@nestjs/config": "4.0.3",
     "@nestjs/core": "11.1.18",

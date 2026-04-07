@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   HostListener,
   OnInit,
   signal,
@@ -27,6 +28,7 @@ export class AppComponent implements OnInit {
   userLeft = signal<string>('');
   socketService = inject(SocketService);
   imagePreloadService = inject(ImagePreloadService);
+  private destroyRef = inject(DestroyRef);
 
   constructor() {
     this.userId = this.generateOrGetUserId();
@@ -73,7 +75,7 @@ export class AppComponent implements OnInit {
   private listenToSocketEvents(): void {
     this.socketService
       .onRoomsUpdate()
-      .pipe(takeUntilDestroyed())
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((rooms: IRoom[]) => {
         this.rooms.set(rooms);
         this.status.set('Available rooms fetched');
@@ -81,7 +83,7 @@ export class AppComponent implements OnInit {
 
     this.socketService
       .onRoomUpdate()
-      .pipe(takeUntilDestroyed())
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((data: IRoomUpdateEvent) => {
         if (data.event === EventType.USER_LEFT) {
           this.handleUserLeftEvent(data);
@@ -90,7 +92,7 @@ export class AppComponent implements OnInit {
 
     this.socketService
       .onRoomReady()
-      .pipe(takeUntilDestroyed())
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((room: IRoom) => {
         this.currentRoom.set(room);
         window.localStorage.setItem('current-room', JSON.stringify(room));
@@ -99,7 +101,7 @@ export class AppComponent implements OnInit {
 
     this.socketService
       .onRoomCreated()
-      .pipe(takeUntilDestroyed())
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((room: IRoom) => {
         this.currentRoom.set(room);
         window.localStorage.setItem('current-room', JSON.stringify(room));
