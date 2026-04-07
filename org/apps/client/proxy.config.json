@@ -6,8 +6,8 @@
     "logLevel": "debug"
   },
 
-  "/socket.io": {
-    "target": "ws://localhost:3000",
+  "/ws": {
+    "target": "ws://localhost:3000/socket.io",
     "ws": true,
     "secure": false,
     "logLevel": "debug"

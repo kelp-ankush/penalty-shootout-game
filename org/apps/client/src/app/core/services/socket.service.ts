@@ -27,7 +27,7 @@ export class SocketService {
     this.socket = io(environment.wsUrl, {
       auth: { userId: this.userId },
       transports: ['websocket'],
-      path: '/socket.io',
+      path: '/ws',
     });
   }
 
