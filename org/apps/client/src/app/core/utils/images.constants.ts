@@ -15,4 +15,4 @@ export const ASSETS = {
     AUDIENCE: 'https://s6.imgcdn.dev/YA7F9N.png',
     NETS: 'https://s6.imgcdn.dev/YA78qL.png',
   },
-} as const;
+}
