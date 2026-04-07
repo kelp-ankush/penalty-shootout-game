@@ -2,12 +2,33 @@
 
 @import 'tailwindcss';
 
+:root {
+  --player-width: 130px;
+  --player-height: 200px;
+  --player-left: -150px;
+  --player-top: -50px;
+
+  --goalkie-width: 240px;
+  --goalkie-height: 200px;
+  --goalkie-left: 110px;
+  --goalkie-bottom: -36px;
+
+  --slide-translateX-end: 190px;
+  --kick-background-position-end: -12480px;
+  --moveForward-translateX-end: 110px;
+  --moveForward-translateY-end: -40px;
+  --dive-background-position-end: -11040px;
+  
+  --animation-duration: 1s;
+  --z-index-player: 50;
+}
+
 @keyframes slide {
   from {
     transform: translateX(0);
   }
   to {
-    transform: translateX(190px);
+    transform: translateX(var(--slide-translateX-end));
   }
 }
 
@@ -16,13 +37,13 @@
 }
 
 .player {
-  width: 130px;
-  height: 200px;
+  width: var(--player-width);
+  height: var(--player-height);
   position: absolute;
-  left: -150px;
-  top: -50px;
+  left: var(--player-left);
+  top: var(--player-top);
   transform: translate(-50%, 0%);
-  z-index: 50;
+  z-index: var(--z-index-player);
 }
 
 @keyframes kick {
@@ -30,7 +51,7 @@
     background-position: 0 0;
   }
   to {
-    background-position: -12480px 0px;
+    background-position: var(--kick-background-position-end) 0px;
   }
 }
 
@@ -39,16 +60,16 @@
     transform: translate(-50%, 0%) translateX(0px);
   }
   to {
-    transform: translate(-50%, -40%) translateX(110px);
+    transform: translate(-50%, var(--moveForward-translateY-end)) translateX(var(--moveForward-translateX-end));
   }
 }
 
 .goalkie {
-  width: 240px;
-  height: 200px;
+  width: var(--goalkie-width);
+  height: var(--goalkie-height);
   position: absolute;
-  left: 110px;
-  bottom: -36px;
+  left: var(--goalkie-left);
+  bottom: var(--goalkie-bottom);
   transform: translate(0, 0%);
 }
 
@@ -57,7 +78,7 @@
     background-position: 0 0;
   }
   to {
-    background-position: -11040px 0px;
+    background-position: var(--dive-background-position-end) 0px;
   }
 }
 
