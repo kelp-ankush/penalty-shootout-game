@@ -15,7 +15,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@org/shared": ["dist/shared/src"],
+      "@org/shared": ["dist/shared"],
     }
   },
   "exclude": ["node_modules", "tmp"]

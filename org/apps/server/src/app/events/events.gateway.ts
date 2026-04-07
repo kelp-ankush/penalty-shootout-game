@@ -33,6 +33,7 @@ import {
     credentials: true,
   },
   namespace: '/game',
+  path: '/ws',
 })
 export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
