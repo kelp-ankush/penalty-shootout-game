@@ -24,8 +24,6 @@ export default [
           style: 'kebab-case',
         },
       ],
-      '@angular-eslint/template/click-events-have-key-events': 'off',
-      '@angular-eslint/template/elements-content': 'off',
     },
   },
   {
@@ -33,6 +31,7 @@ export default [
     rules: {
       '@angular-eslint/template/click-events-have-key-events': 'off',
       '@angular-eslint/template/elements-content': 'off',
+      '@angular-eslint/template/interactive-supports-focus': 'off',
     },
   },
 ];
