@@ -6,18 +6,22 @@ export class MatchService {
   private games: IGame[] = [];
 
   createGame(roomId: string, players: string[]): IGame {
+    const score = players.reduce((acc, p) => {
+      acc[p] = 0;
+      return acc;
+    }, {});
+
+    const shots = players.reduce((acc, p) => {
+      acc[p] = [];
+      return acc;
+    }, {});
+
     const game: IGame = {
       roomId,
       players,
       turn: players[0],
-      score: players.reduce((acc, p) => {
-        acc[p] = 0;
-        return acc;
-      }, {}),
-      shots: players.reduce((acc, p) => {
-        acc[p] = [];
-        return acc;
-      }, {}),
+      score,
+      shots,
       round: 1,
       maxRounds: 5,
       isFinished: false,
@@ -28,8 +32,8 @@ export class MatchService {
     return game;
   }
 
-  getGame(roomId: string) {
-    return this.games.find((g) => g.roomId === roomId);
+  getGame(roomId: string): IGame | undefined {
+    return this.games.find((g: IGame) => g.roomId === roomId);
   }
 
   updateScore(data: IShotComplete): IGame | null {

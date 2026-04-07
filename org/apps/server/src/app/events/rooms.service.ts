@@ -6,11 +6,11 @@ import { randomUUID } from 'crypto';
 export class RoomService {
   private rooms: IRoom[] = [];
 
-  getAvailableRooms() {
+  getAvailableRooms(): IRoom[] {
     return this.rooms.filter((room) => !room.isLocked);
   }
 
-  getRoomByRoomId(roomId: string) {
+  getRoomByRoomId(roomId: string): IRoom | undefined {
     return this.rooms.find((room) => room.id === roomId);
   }
 

@@ -15,10 +15,12 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 })
 export class AppComponent implements OnInit {
   userId = '';
+
   rooms = signal<IRoom[]>([]);
   status = signal<string>('');
   currentRoom = signal<IRoom | null>(null);
   userLeft = signal<string>('');
+
   socketService = inject(SocketService);
   imagePreloadService = inject(ImagePreloadService);
   private destroyRef = inject(DestroyRef);

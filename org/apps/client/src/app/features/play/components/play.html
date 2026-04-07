@@ -1,44 +1,14 @@
-<!-- eslint-disable @angular-eslint/template/interactive-supports-focus -->
-<!-- eslint-disable @angular-eslint/template/click-events-have-key-events -->
-<!-- eslint-disable @angular-eslint/template/elements-content -->
 <div class="h-190 w-200" #playground>
   @if (showPlayground() && game) {
   <div
-    class="
-      flex
-      items-center
-      justify-between
-      gap-4
-      px-4
-      py-2
-      text-sm
-      opacity-90
-      border-b
-      bg-linear-to-r
-      from-green-900
-      via-black
-      to-green-800
-    "
+    class="flex items-center justify-between gap-4 px-4 py-2 text-sm opacity-90 border-b bg-linear-to-r from-green-900 via-black to-green-800"
   >
     <h4 class="tracking-wide">Room : <span class="font-mono">{{ roomId() }}</span></h4>
     <h5 class="font-semibold">Round: {{ Math.ceil(round() / 2) }} / 5</h5>
   </div>
   @if (winner()) {
   <div
-    class="
-      flex
-      items-center
-      justify-between
-      gap-4
-      px-4
-      py-2
-      opacity-90
-      border-b
-      bg-linear-to-r
-      from-green-900
-      via-black
-      to-green-800
-    "
+    class="flex items-center justify-between gap-4 px-4 py-2 opacity-90 border-b bg-linear-to-r from-green-900 via-black to-green-800"
   >
     @if (winner() === userId()) {
     <span class="text-green-400 text-lg font-bold tracking-wide animate-pulse">🏆 You Win!</span>
@@ -76,19 +46,7 @@
 
       @if (game.turn === userId()) {
       <div
-        class="
-          absolute
-          -bottom-50
-          md:left-[49.75%]
-          left-[49.5%]
-          w-1.5
-          h-33
-          bg-[#d8e2e6]
-          rounded
-          cursor-grab
-          active:cursor-grabbing
-          z-1000
-        "
+        class="absolute -bottom-50 md:left-[49.75%] left-[49.5%] w-1.5 h-33 bg-[#d8e2e6] rounded cursor-grab active:cursor-grabbing z-1000"
         id="arrow"
         (mousedown)="onMouseDown($event)"
         (pointerdown)="onPointerDown($event)"
@@ -143,19 +101,7 @@
 
     <div class="invisible h-40"></div>
     <div
-      class="
-        flex
-        items-center
-        justify-around
-        gap-2
-        max-h-20
-        min-h-12
-        w-full
-        bg-linear-to-r
-        from-green-900
-        via-black
-        to-green-800
-      "
+      class="flex items-center justify-around gap-2 max-h-20 min-h-12 w-full bg-linear-to-r from-green-900 via-black to-green-800"
     >
       <div class="flex flex-col items-center gap-2">
         <span class="text-xs text-center"> Your Score</span>
@@ -177,21 +123,7 @@
   </div>
 
   <button
-    class="
-      text-white
-      absolute
-      bottom-1
-      right-1
-      text-xs
-      bg-linear-to-r
-      from-green-900
-      via-black
-      to-green-800
-      px-2
-      py-1
-      rounded
-      cursor-pointer
-    "
+    class="text-white absolute bottom-1 right-1 text-xs bg-linear-to-r from-green-900 via-black to-green-800 px-2 py-1 rounded cursor-pointer"
     (click)="showTutorial = true"
   >
     Help?
@@ -200,19 +132,7 @@
   @if (showTutorial) {
   <div class="fixed inset-0 z-2000 flex items-center justify-center bg-black/70 backdrop-blur-sm">
     <div
-      class="
-        bg-linear-to-br
-        from-green-900
-        via-black
-        to-green-800
-        text-white
-        w-[90%]
-        max-w-md
-        rounded-xl
-        shadow-xl
-        p-5
-        relative
-      "
+      class="bg-linear-to-br from-green-900 via-black to-green-800 text-white w-[90%] max-w-md rounded-xl shadow-xl p-5 relative"
     >
       <button class="absolute top-2 right-3 text-xl hover:scale-110 cursor-pointer" (click)="showTutorial = false">
         ✖
@@ -259,18 +179,7 @@
   </div>
   } } @else {
   <div
-    class="
-      h-full
-      w-full
-      bg-linear-to-br
-      from-green-900
-      via-black
-      to-green-800
-      flex flex-col
-      items-center
-      justify-center
-      text-white
-    "
+    class="h-full w-full bg-linear-to-br from-green-900 via-black to-green-800 flex flex-col items-center justify-center text-white"
   >
     <div class="text-xl mb-2 animate-pulse">Waiting for opponent...</div>
 
