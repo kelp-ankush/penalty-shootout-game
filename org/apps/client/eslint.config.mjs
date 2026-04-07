@@ -24,12 +24,15 @@ export default [
           style: 'kebab-case',
         },
       ],
-      '@angular-eslint/template/click-events-have-key-events': ['off'],
+      '@angular-eslint/template/click-events-have-key-events': 'off',
+      '@angular-eslint/template/elements-content': 'off',
     },
   },
   {
     files: ['**/*.html'],
-    // Override or add rules here
-    rules: {},
+    rules: {
+      '@angular-eslint/template/click-events-have-key-events': 'off',
+      '@angular-eslint/template/elements-content': 'off',
+    },
   },
 ];
