@@ -10,15 +10,15 @@ import { IGame, IGoalieDive, IResultUpdateEvent, IRoom, IRoomUpdateEvent, IShotC
 })
 export class SocketService {
   private readonly socket: Socket;
-
   private readonly userId: string;
 
   
   constructor() {
     this.userId = this.getOrCreateUserId();
-
-    this.socket = io(environment.apiUrl, {
+    this.socket = io(environment.wsUrl, {
       auth: { userId: this.userId },
+      transports: ['websocket'] ,
+      path: '/socket.io'
     });
   }
 

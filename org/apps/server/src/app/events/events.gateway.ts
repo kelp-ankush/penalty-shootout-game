@@ -16,9 +16,10 @@ import { IEventResponse } from '../core/interfaces/event.interface';
 
 @WebSocketGateway({
   cors: {
-    origin: ['http://localhost:4200', 'https://penalty-shoots-ashy.vercel.app'],
+    origin: process.env.ALLOWED_ORIGINS?.split(',') || '*',
     credentials: true,
   },
+  namespace: '/game'
 })
 export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()

@@ -12,13 +12,13 @@ async function bootstrap() {
   const globalPrefix = 'api';
   app.setGlobalPrefix(globalPrefix);
   app.enableCors({
-    origin: ['http://localhost:4200', 'https://penalty-shoots-ashy.vercel.app'],
+    originL: process.env.ALLOWED_ORIGINS?.split(',') || '*',
     methods: ['GET', 'POST'],
     credentials: true,
   });
   const port = process.env.PORT || 3000;
   await app.listen(port);
-
+  
   Logger.log(
     `🚀 Application is running on: http://localhost:${port}/${globalPrefix}`,
   );
