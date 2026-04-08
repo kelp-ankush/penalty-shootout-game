@@ -1,0 +1,19 @@
+
+services:
+  server:
+    image: org-server
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+    command: ["node", "-r", "tsconfig-paths/register", "dist/src/main.js"]  
+    restart: unless-stopped
+
+  client:
+    image: org-client
+    ports:
+      - "4200:80"
+    environment:
+      - NODE_ENV=production
+    command: ["nginx", "-g", "daemon off;"]
+    restart: unless-stopped

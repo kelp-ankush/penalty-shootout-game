@@ -1,0 +1,16 @@
+# Node modules (install in Docker instead)
+node_modules
+
+# Build output
+dist
+.nx
+
+# Git history
+.git
+
+# IDE/editor
+.vscode
+tmp
+
+# Optional: logs or temp files
+*.log
