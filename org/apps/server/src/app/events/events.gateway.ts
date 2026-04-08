@@ -28,10 +28,6 @@ import {
   }),
 )
 @WebSocketGateway({
-  cors: {
-    origin: process.env.ALLOWED_ORIGINS?.split(',') || '*',
-    credentials: true,
-  },
   namespace: '/game',
   path: '/ws',
 })
